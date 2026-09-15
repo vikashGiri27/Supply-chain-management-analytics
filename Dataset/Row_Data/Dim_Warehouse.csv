@@ -1,0 +1,16 @@
+Warehouse_ID,Warehouse_Name,Warehouse_Location,Warehouse_Capacity
+W01,Delhi DC-01,Delhi (North),197661
+W02,Chennai DC-02,Chennai (South),201087
+W03,Kolkata DC-03,Kolkata (East),200081
+W04,Ahmedabad DC-04,Ahmedabad (West),123309
+W05,Bhopal DC-05,Bhopal (Central),166446
+W06,Delhi DC-06,Delhi (North),146661
+W07,Pune DC-07,Pune (West),197215
+W08,Bhopal DC-08,Bhopal (Central),46154
+W09,Nagpur DC-09,Nagpur (Central),192876
+W10,Bengaluru DC-10,Bengaluru (South),212760
+W11,Guwahati DC-11,Guwahati (East),104288
+W12,Nagpur DC-12,Nagpur (Central),91195
+W13,Chandigarh DC-13,Chandigarh (North),60581
+W14,Raipur DC-14,Raipur (Central),70087
+W15,Hyderabad DC-15,Hyderabad (South),204053

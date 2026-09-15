@@ -1,0 +1,201 @@
+Product_ID,Product_Name,Product_Category,Unit_Cost,Selling_Price,Product_Status
+P0001,Men's Cotton T-Shirt,Apparel,943.08,1664.65,Active
+P0002,Yoga Mat,Sports & Fitness,2920.16,7195.9,Active
+P0003,Spiral Notebook,Stationery & Office,295.24,387.13,Active
+P0004,First Aid Kit,Pharma & Healthcare,1066.97,1989.16,Active
+P0005,Sunflower Oil 1L,Grocery & FMCG,533.79,622.65,Active
+P0006,Sunflower Oil 1L,Grocery & FMCG,266.14,486.92,Active
+P0007,LED Monitor,Electronics,4354.51,5363.19,Active
+P0008,Action Figure Pack,Toys & Games,1458,1927.89,Active
+P0009,Digital Thermometer,Pharma & Healthcare,936.74,1236.88,Active
+P0010,Whiteboard Marker Set,Stationery & Office,377.97,790.47,Discontinued
+P0011,Cordless Kettle Charger,Electronics,14099.8,31467.44,Active
+P0012,Yoga Mat,Sports & Fitness,1724.9,3442.7,Active
+P0013,Office Chair,Furniture,16997.45,43261.06,Active
+P0014,Basmati Rice 5kg,Grocery & FMCG,258.14,437.18,Active
+P0015,Sunflower Oil 1L,Grocery & FMCG,316.76,495.5,Active
+P0016,Sunflower Oil 1L,Grocery & FMCG,542.13,1306.25,Active
+P0017,Running Shorts,Apparel,1172.01,1727.79,Active
+P0018,VACUUM FLASK,Home & Kitchen,1440.61,3668.76,Active
+P0019,Non-Stick Frying Pan,Home & Kitchen,1346.06,1571.69,Active
+P0020,Whole Wheat Flour 5kg,Grocery & FMCG,139.66,357.02,Active
+P0021,First Aid Kit,Pharma & Healthcare,1467.33,1779.26,Active
+P0022,Cordless Kettle Charger,Electronics,9369.3,22881.31,Active
+P0023,Sunflower Oil 1L,Grocery & FMCG,241.16,461.86,Active
+P0024,Formal Shirt,Apparel,2003.72,5189.23,Discontinued
+P0025,Vacuum Flask,Home & Kitchen,2113.7,2656.93,Active
+P0026,Study Table,Furniture,21718.02,42417.22,Active
+P0027,Basmati Rice 5kg,Grocery & FMCG,183.97,470.13,Discontinued
+P0028,Stainless Steel Bottle Set,Home & Kitchen,5600,10687.55,Active
+P0029,Hand Sanitizer 500ml,Pharma & Healthcare,2085.12,4300.83,Active
+P0030,USB-C Hub,Electronics,5146.33,11110.08,Active
+P0031,Multivitamin Tablets,Pharma & Healthcare,892.75,1615.06,Active
+P0032,Sunflower Oil 1L,Grocery & FMCG,267.29,550.61,Active
+P0033,Power Bank,Electronics,7064.85,14110.31,Active
+P0034,Cricket Bat,Sports & Fitness,3715.49,9127.77,Active
+P0035,Yoga Mat,Sports & Fitness,3294.09,4005.27,Active
+P0036,Office Chair,Furniture,10124.53,15767.91,Active
+P0037,Formal Shirt,Apparel,867.63,2193.45,Active
+P0038,LED Monitor,Electronics,3704.1,9041.27,Active
+P0039,Car Battery 12V,Automotive Parts,3319.62,6010.84,Active
+P0040,LED Table Lamp,Home & Kitchen,3222.43,6603.38,Active
+P0041,Bluetooth Speaker,Electronics,8792.59,13647.88,Active
+P0042,Non-Stick Frying Pan,Home & Kitchen,1126.45,1602.69,Active
+P0043,Digital Multimeter,Electronics,8614.56,15698.85,Active
+P0044,Action Figure Pack,Toys & Games,1273.09,2116.33,Active
+P0045,Basmati Rice 5kg,Grocery & FMCG,134.99,269.48,Active
+P0046,Wiper Blade Pair,Automotive Parts,4481.56,5658.93,Active
+P0047,Men's Cotton T-Shirt,Apparel,1364.13,3496.09,Active
+P0048,Vacuum Flask,Home & Kitchen,1185.84,3059.47,Active
+P0049,Multivitamin Tablets,Pharma & Healthcare,1823.74,3943.54,Active
+P0050,Roasted Almonds 500g,Grocery & FMCG,277.97,535.74,Active
+P0051,Resistance Bands,Sports & Fitness,4468.43,7144.19,Active
+P0052,Spiral Notebook,Stationery & Office,431.89,1006.3,Active
+P0053,Resistance Bands,Sports & Fitness,1305.62,2797.76,Active
+P0054,Remote Control Car,Toys & Games,656.97,910.43,Discontinued
+P0055,Digital Thermometer,Pharma & Healthcare,1972.91,4874.75,Active
+P0056,Building Blocks Set,Toys & Games,1357.55,3180.3,Active
+P0057,Power Bank,Electronics,10220.41,25829.12,Active
+P0058,Green Tea Pack,Grocery & FMCG,560,1233.28,Active
+P0059,LED Monitor,Electronics,10509.8,21434.23,Active
+P0060,Women's Denim Jacket,Apparel,2337.76,4106.16,Active
+P0061,Men's Cotton T-Shirt,Apparel,2134.89,5342.47,Active
+P0062,Instant Noodles Box,Grocery & FMCG,290.85,699.72,Active
+P0063,Study Table,Furniture,8968.7,10902.06,Active
+P0064,Formal Shirt,Apparel,1936.53,2301.05,Active
+P0065,Roasted Almonds 500g,Grocery & FMCG,142.69,241.98,Active
+P0066,Multivitamin Tablets,Pharma & Healthcare,1354.71,3150.11,Discontinued
+P0067,Sunflower Oil 1L,Grocery & FMCG,164.75,425.31,Active
+P0068,Study Table,Furniture,10938.76,14965.37,Active
+P0069,USB-C Hub,Electronics,21000,42241.28,Discontinued
+P0070,Adjustable Dumbbell Set,Sports & Fitness,1022.12,1739.95,Active
+P0071,Spiral Notebook,Stationery & Office,359.38,918.71,Active
+P0072,Roasted Almonds 500g,Grocery & FMCG,93.76,222.31,Active
+P0073,LED Monitor,Electronics,6239.48,14759.97,Active
+P0074,3-Seater Sofa,Furniture,18098.89,33113.82,Active
+P0075,Gel Pen Pack,Stationery & Office,263.33,461.22,Active
+P0076,Whiteboard Marker Set,Stationery & Office,148.77,230.06,Active
+P0077,Gel Pen Pack,Stationery & Office,178.33,219.66,Active
+P0078,Smart Router,Electronics,11096.85,26675.13,Active
+P0079,Formal Shirt,Apparel,919.64,2141.57,Active
+P0080,Cordless Kettle Charger,Electronics,8803,22884.2,Active
+P0081,Puzzle 1000pc,Toys & Games,1074.2,2787.68,Active
+P0082,Alloy Wheel Cap,Automotive Parts,2996.09,5858.48,Active
+P0083,Women's Denim Jacket,Apparel,3500,7927.61,Active
+P0084,USB-C Hub,Electronics,10846.28,27331.65,Active
+P0085,Men's Cotton T-Shirt,Apparel,481.35,1146.57,Active
+P0086,Women's Denim Jacket,Apparel,1454.47,2194.29,Active
+P0087,A4 Paper Ream,Stationery & Office,183.16,330.29,Active
+P0088,Car Battery 12V,Automotive Parts,6355.53,8499.13,Active
+P0089,Board Game Classic,Toys & Games,706.47,1789.75,Active
+P0090,LED Table Lamp,Home & Kitchen,1982.92,4023.25,Active
+P0091,LED Monitor,Electronics,10169.13,15065.89,Active
+P0092,Gel Pen Pack,Stationery & Office,393.13,834.99,Active
+P0093,Whiteboard Marker Set,Stationery & Office,139.93,286.34,Active
+P0094,Multivitamin Tablets,Pharma & Healthcare,1290.13,2153.66,Active
+P0095,Gel Pen Pack,Stationery & Office,201.1,264.38,Active
+P0096,Ceramic Dinner Set,Home & Kitchen,1514.78,3217.06,Active
+P0097,Ceramic Dinner Set,Home & Kitchen,5076.72,9668.34,Active
+P0098,Ceramic Dinner Set,Home & Kitchen,2571.34,5836.59,Active
+P0099,Smart Router,Electronics,4205.62,8008.5,Active
+P0100,Bluetooth Speaker,Electronics,12500.81,29822.72,Discontinued
+P0101,Smart Router,Electronics,21000,40955.56,Active
+P0102,Engine Oil Filter,Automotive Parts,6954.17,13653.54,Active
+P0103,Running Shorts,Apparel,619.85,1500.75,Active
+P0104,Vacuum Flask,Home & Kitchen,1648.43,2860.11,Active
+P0105,Puzzle 1000pc,Toys & Games,1978.32,2659.5,Active
+P0106,Roasted Almonds 500g,Grocery & FMCG,147.42,175.69,Active
+P0107,Running Shorts,Apparel,1654.21,3713.62,Active
+P0108,Desk Organizer,Stationery & Office,375.62,769.81,Active
+P0109,Whole Wheat Flour 5kg,Grocery & FMCG,132.11,286.8,Active
+P0110,Cordless Kettle Charger,Electronics,7668.34,11186.56,Active
+P0111,Green Tea Pack,Grocery & FMCG,41.53,55.97,Active
+P0112,Sunflower Oil 1L,Grocery & FMCG,125.83,147.36,Active
+P0113,Remote Control Car,Toys & Games,925.43,1534.69,Active
+P0114,3-Seater Sofa,Furniture,5626.48,11283.23,Active
+P0115,Wiper Blade Pair,Automotive Parts,9386.89,16133.75,Active
+P0116,Building Blocks Set,Toys & Games,513.62,916.47,Active
+P0117,Office Chair,Furniture,8426.26,20737.28,Active
+P0118,Basmati Rice 5kg,Grocery & FMCG,224.19,371.03,Active
+P0119,Remote Control Car,Toys & Games,2158.53,4091.03,Active
+P0120,First Aid Kit,Pharma & Healthcare,743.83,1700.62,Active
+P0121,Folding Bed,Furniture,18783.09,32400.59,Active
+P0122,Action Figure Pack,Toys & Games,1055.39,2165.69,Active
+P0123,Men's Cotton T-Shirt,Apparel,811.12,1947.03,Active
+P0124,Cordless Kettle Charger,Electronics,9953.4,25150.3,Active
+P0125,Instant Noodles Box,Grocery & FMCG,231.98,316.25,Active
+P0126,Vacuum Flask,Home & Kitchen,1555.55,3878.84,Active
+P0127,Folding Bed,Furniture,10872.93,20262.45,Active
+P0128,Action Figure Pack,Toys & Games,866,1320.18,Active
+P0129,Bluetooth Speaker,Electronics,8361.36,15182.11,Active
+P0130,Vacuum Flask,Home & Kitchen,2924.15,7518.13,Active
+P0131,MEN'S COTTON T-SHIRT,Apparel,2928.3,5459.22,Active
+P0132,Roasted Almonds 500g,Grocery & FMCG,113.09,183.96,Active
+P0133,LED Monitor,Electronics,21000,43437.06,Active
+P0134,Running Shorts,Apparel,499.26,748,Active
+P0135,Cricket Bat,Sports & Fitness,2409.98,3036.58,Active
+P0136,Kids Winter Jacket,Apparel,1778.15,2377.17,Active
+P0137,Non-Stick Frying Pan,Home & Kitchen,2416.77,3228,Active
+P0138,Spiral Notebook,Stationery & Office,186.78,255.94,Discontinued
+P0139,Formal Shirt,Apparel,1194.05,1613.52,Active
+P0140,Adjustable Dumbbell Set,Sports & Fitness,2031.98,4225.03,Active
+P0141,Football,Sports & Fitness,1936.4,2737.54,Active
+P0142,Basmati Rice 5kg,Grocery & FMCG,321.15,530.29,Active
+P0143,LED Table Lamp,Home & Kitchen,2510.41,6151.37,Active
+P0144,Running Shorts,Apparel,937.03,1721.55,Active
+P0145,Sunflower Oil 1L,Grocery & FMCG,329.28,697.4,Discontinued
+P0146,LED Monitor,Electronics,9212.05,12895.62,Active
+P0147,Multivitamin Tablets,Pharma & Healthcare,2289.71,3271.58,Active
+P0148,Vacuum Flask,Home & Kitchen,2877.01,3479.05,Active
+P0149,Power Bank,Electronics,5219.31,7280.71,Active
+P0150,Sunflower Oil 1L,Grocery & FMCG,158.7,246.61,Active
+P0151,Puzzle 1000pc,Toys & Games,1525.68,2146.12,Active
+P0152,Sunflower Oil 1L,Grocery & FMCG,284.94,364.33,Active
+P0153,Whole Wheat Flour 5kg,Grocery & FMCG,207.82,275.35,Active
+P0154,Vacuum Flask,Home & Kitchen,2226.88,4048.76,Active
+P0155,YOGA MAT,Sports & Fitness,4925.1,7137.38,Discontinued
+P0156,Whole Wheat Flour 5kg,Grocery & FMCG,156.23,262.18,Active
+P0157,Car Battery 12V,Automotive Parts,5455.68,10256.43,Active
+P0158,Desk Organizer,Stationery & Office,230.48,495.78,Active
+P0159,Basmati Rice 5kg,Grocery & FMCG,188.34,227.33,Discontinued
+P0160,A4 Paper Ream,Stationery & Office,441.71,1019.97,Active
+P0161,Kids Winter Jacket,Apparel,2001.95,4124.93,Active
+P0162,Car Battery 12V,Automotive Parts,6233.03,7906.91,Active
+P0163,Engine Oil Filter,Automotive Parts,7971.3,19264.15,Active
+P0164,Digital Thermometer,Pharma & Healthcare,1541.1,3830.04,Active
+P0165,Power Bank,Electronics,11109.93,13760.35,Active
+P0166,3-Seater Sofa,Furniture,8991.16,13949.54,Active
+P0167,Men's Cotton T-Shirt,Apparel,1558.14,3613.31,Active
+P0168,Basmati Rice 5kg,Grocery & FMCG,196.77,439.78,Active
+P0169,Digital Multimeter,Electronics,8292.58,11755.19,Active
+P0170,Digital Thermometer,Pharma & Healthcare,2053.56,2984.97,Active
+P0171,Alloy Wheel Cap,Automotive Parts,2756.6,4650.89,Active
+P0172,Smart Router,Electronics,21000,38903.72,Active
+P0173,Stainless Steel Bottle Set,Home & Kitchen,1269.89,2598.79,Active
+P0174,Roasted Almonds 500g,Grocery & FMCG,114.44,192.82,Active
+P0175,Wiper Blade Pair,Automotive Parts,7405.06,13482.21,Active
+P0176,Whole Wheat Flour 5kg,Grocery & FMCG,311.98,696.91,Active
+P0177,Engine Oil Filter,Automotive Parts,5669.88,6821.95,Active
+P0178,Kids Winter Jacket,Apparel,1814.09,2750.22,Active
+P0179,Resistance Bands,Sports & Fitness,2584.13,5644.66,Active
+P0180,Cordless Kettle Charger,Electronics,5044.18,12348.4,Active
+P0181,Women's Denim Jacket,Apparel,1376.18,2603.64,Active
+P0182,Power Bank,Electronics,5630.97,10820.27,Active
+P0183,Puzzle 1000pc,Toys & Games,1709.75,2231.91,Active
+P0184,Board Game Classic,Toys & Games,975.56,1754.79,Active
+P0185,Roasted Almonds 500g,Grocery & FMCG,138.98,267.16,Active
+P0186,Car Battery 12V,Automotive Parts,3533.95,5306.52,Active
+P0187,Folding Bed,Furniture,12907.92,19883.39,Active
+P0188,BP Monitor,Pharma & Healthcare,1150.43,1952.35,Active
+P0189,Ceramic Dinner Set,Home & Kitchen,1392.12,1641.45,Active
+P0190,Basmati Rice 5kg,Grocery & FMCG,237.21,383.57,Active
+P0191,Power Bank,Electronics,8929.37,13006.52,Active
+P0192,Remote Control Car,Toys & Games,814.91,1324.12,Discontinued
+P0193,Building Blocks Set,Toys & Games,829.67,1098.2,Active
+P0194,Car Battery 12V,Automotive Parts,4660.55,11377.64,Active
+P0195,Men's Cotton T-Shirt,Apparel,642.35,1291.58,Active
+P0196,Running Shorts,Apparel,655.52,1399.34,Discontinued
+P0197,Whiteboard Marker Set,Stationery & Office,178.05,408.5,Active
+P0198,Remote Control Car,Toys & Games,943.71,1767.32,Active
+P0199,Action Figure Pack,Toys & Games,1226.6,1565.18,Active
+P0200,Gel Pen Pack,Stationery & Office,533.22,1028.48,Active

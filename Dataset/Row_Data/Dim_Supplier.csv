@@ -1,0 +1,41 @@
+Supplier_ID,Supplier_Name,Supplier_Location,Supplier_Category,Supplier_Status
+S001,Prime Enterprises,Kochi,Finished Goods,Active
+S002,Global Enterprises,Raipur,Raw Material,Active
+S003,United Enterprises,Nagpur,MRO,Active
+S004,united enterprises  ,Bhopal,Component,Active
+S005,Crown Distributors,Delhi,MRO,Active
+S006,Zenith Suppliers,Surat,Finished Goods,Active
+S007,Apex Industries,Indore,MRO,Active
+S008,Apex Traders,Lucknow,Finished Goods,Active
+S009,Pioneer Distributors,Surat,Finished Goods,Active
+S010,Crown Traders,Kochi,Finished Goods,Active
+S011,Reliable Traders,Delhi,Finished Goods,Active
+S012,Global Sourcing Co,Kolkata,Finished Goods,Active
+S013,Zenith Sourcing Co,Delhi,Component,Active
+S014,Crown Suppliers,Lucknow,Raw Material,Inactive
+S015,Global Sourcing Co,Pune,Packaging,Active
+S016,National Suppliers,Chennai,Raw Material,Active
+S017,National Sourcing Co,Bhubaneswar,Finished Goods,Active
+S018,National Distributors,Nagpur,Component,Inactive
+S019,Apex Enterprises,Nagpur,MRO,Active
+S020,National Sourcing Co,Lucknow,Component,Active
+S021,Apex Sourcing Co,Ahmedabad,Finished Goods,Active
+S022,Pioneer Traders,Surat,Component,Active
+S023,Pioneer Traders,Nagpur,Component,Inactive
+S024,Metro Distributors,Patna,Finished Goods,Inactive
+S025,Pioneer Sourcing Co,Kochi,Component,Active
+S026,Crown Industries,Bhubaneswar,Packaging,Inactive
+S027,United Suppliers,Chennai,Packaging,Active
+S028,Reliable Suppliers,Raipur,Component,Active
+S029,United Enterprises,Chennai,MRO,Active
+S030,Prime Distributors,Mumbai,Finished Goods,Active
+S031,United Enterprises,Delhi,Packaging,Active
+S032,Reliable Traders,Delhi,MRO,Active
+S033,Global Enterprises,Nagpur,Component,Active
+S034,pioneer sourcing co  ,Ahmedabad,MRO,Active
+S035,National Traders,Guwahati,Raw Material,Active
+S036,Crown Suppliers,Surat,Packaging,Active
+S037,Crown Industries,Lucknow,Component,Active
+S038,Prime Industries,Chandigarh,Finished Goods,Active
+S039,National Suppliers,Surat,Component,Inactive
+S040,Reliable Industries,Mumbai,Finished Goods,Active
