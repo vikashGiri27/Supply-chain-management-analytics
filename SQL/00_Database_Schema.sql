@@ -12,3 +12,12 @@ Unit_Cost decimal(12,2),
 Selling_Price decimal(12,2),
 Product_Status varchar(20));
 
+# Import Dim_Product schema :
+Load data infile 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Dim_Product.csv'
+Into table Dim_product
+Fields terminated by ','
+Enclosed by '"'
+Lines terminated by '\n'
+ignore 1 rows;
+
+
