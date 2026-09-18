@@ -68,7 +68,14 @@ Customer_Name varchar(50),
 Customer_Segment varchar(40),
 Customer_Location varchar(30));
 
+# import Dim_Customer data
 
+Load Data Infile 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Supply_Chain_Cleaned_Data/Dim_Customer.csv'
+Into Table Dim_Customer
+Fields terminated by ','
+Enclosed by '"'
+Lines terminated by '\n'
+Ignore 1 rows;
 
 
 
