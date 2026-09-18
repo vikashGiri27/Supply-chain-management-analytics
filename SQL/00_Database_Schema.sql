@@ -31,6 +31,15 @@ Warehouse_Name varchar(30),
 Warehouse_Location varchar(40),
 Warehouse_Capacity int);
 
+# Import Dim_Warehouse schema :
+
+Load Data Infile 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Supply_Chain_Cleaned_Data/Dim_Warehouse.csv'
+Into Table Dim_Warehouse
+Fields Terminated By ','
+Enclosed by '"'
+lines terminated by  '\n'
+Ignore 1 rows;
+
 
 
 
