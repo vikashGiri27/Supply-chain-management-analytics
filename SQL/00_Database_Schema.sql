@@ -42,7 +42,7 @@ Ignore 1 rows;
 
 /*-----------------------------------------------------------------------------
                                      Dim_Supplier Setup
--------------------------------------------------------------------------------*/
+------------------------------------------------------------------------------*/
 create table Dim_Supplier(	
 Supplier_ID varchar(10) primary key,
 Supplier_Name varchar(40),
@@ -58,6 +58,17 @@ Fields terminated by ','
 Enclosed by '"'
 Lines terminated by '\n'
 Ignore 1 rows;
+
+/*-----------------------------------------------------------------------------
+                                     Dim_Customer Setup
+-------------------------------------------------------------------------------*/
+create table Dim_Customer(
+Customer_ID	varchar(10) primary key,
+Customer_Name varchar(50),
+Customer_Segment varchar(40),
+Customer_Location varchar(30));
+
+
 
 
 
