@@ -77,5 +77,21 @@ Enclosed by '"'
 Lines terminated by '\n'
 Ignore 1 rows;
 
+/*-----------------------------------------------------------------------------
+                                     Dim_Date Setup
+-------------------------------------------------------------------------------*/
+Create table Dim_Date(Date date primary key,
+Year int,
+Quarter	varchar(10),
+Month int,
+Month_Name varchar(20),
+Day int,
+Week_Of_Year int,
+Day_Name varchar(20),
+Is_Weekend varchar(10));
+
+
+
+
 
 
