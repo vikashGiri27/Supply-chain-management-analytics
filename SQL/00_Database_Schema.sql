@@ -40,6 +40,18 @@ Enclosed by '"'
 lines terminated by  '\n'
 Ignore 1 rows;
 
+/*-----------------------------------------------------------------------------
+                                     Dim_Warehouse Setup
+-------------------------------------------------------------------------------*/
+create table Dim_Supplier(	
+Supplier_ID varchar(10) primary key,
+Supplier_Name varchar(40),
+Supplier_Location varchar(20),
+Supplier_Category varchar(40),
+Supplier_Status varchar(30));
+
+
+
 
 
 
