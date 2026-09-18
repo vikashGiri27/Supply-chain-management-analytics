@@ -22,7 +22,7 @@ LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 
 /*-----------------------------------------------------------------------------
-                                     DDim_Warehouse Setup
+                                     Dim_Warehouse Setup
 -------------------------------------------------------------------------------*/
 
 create table Dim_Warehouse
@@ -90,8 +90,16 @@ Week_Of_Year int,
 Day_Name varchar(20),
 Is_Weekend varchar(10));
 
+# Import Dim_Date data
 
-
+Load Data Infile 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Supply_Chain_Cleaned_Data/Dim_Date.csv'
+Into Table Dim_Date
+Fields terminated by ','
+Enclosed by '"'
+Lines terminated by '\n'
+Ignore 1 rows
+(@Date, Year, Quarter, Month, Month_Name, Day, Week_Of_Year, Day_Name, Is_Weekend)
+set Date=str_to_date(@Date,'%d-%m-%Y');
 
 
 
