@@ -101,5 +101,26 @@ Ignore 1 rows
 (@Date, Year, Quarter, Month, Month_Name, Day, Week_Of_Year, Day_Name, Is_Weekend)
 set Date=str_to_date(@Date,'%d-%m-%Y');
 
+/*-----------------------------------------------------------------------------
+                                  Fact_Inventory Setup
+------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------
+                                  Fact_Inventory Setup
+-------------------------------------------------------------------------------*/
+
+CREATE TABLE Fact_Inventory(
+    Inventory_Date DATE,
+    Product_ID VARCHAR(10),
+    Warehouse_ID VARCHAR(10),
+    Opening_Stock INT,
+    Received_Quantity INT,
+    Issued_or_Sold_Quantity INT,
+    Closing_Stock INT,
+    Reorder_Level INT
+);
+
+desc fact_inventory;
+
+
 
 
