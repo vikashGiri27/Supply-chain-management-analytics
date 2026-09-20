@@ -229,6 +229,22 @@ SET
     Ordered_Quantity = NULLIF(@Ordered_Quantity, '');
    
 
+/*-----------------------------------------------------------------------------
+                              Fact_Delivery Setup
+------------------------------------------------------------------------------*/
+CREATE TABLE Fact_Delivery(
+    Delivery_ID VARCHAR(20) PRIMARY KEY,
+    Order_ID VARCHAR(20),
+    Shipment_Date DATE,
+    Expected_Delivery_Date DATE,
+    Actual_Delivery_Date DATE,
+    Delivery_Status VARCHAR(30),
+    Delivery_Region VARCHAR(50),
+    Delivery_Accuracy_Flag VARCHAR(5),
+    Damage_Flag VARCHAR(5),
+    Carrier_ID VARCHAR(20)
+);
+
 
 
 
