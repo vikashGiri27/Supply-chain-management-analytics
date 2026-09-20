@@ -245,9 +245,31 @@ CREATE TABLE Fact_Delivery(
     Carrier_ID VARCHAR(20)
 );
 
+#Import Fact_Delivery data
 
-
-
+LOAD DATA INFILE
+'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Supply_Chain_Cleaned_Data/Fact_Delivery.csv'
+INTO TABLE Fact_Delivery
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(
+    Delivery_ID,
+    Order_ID,
+    @Shipment_Date,
+    @Expected_Delivery_Date,
+    @Actual_Delivery_Date,
+    Delivery_Status,
+    Delivery_Region,
+    Delivery_Accuracy_Flag,
+    Damage_Flag,
+    Carrier_ID
+)
+SET
+    Shipment_Date = STR_TO_DATE(NULLIF(@Shipment_Date, ''), '%d-%m-%Y'),
+    Expected_Delivery_Date = STR_TO_DATE(NULLIF(@Expected_Delivery_Date, ''), '%d-%m-%Y'),
+    Actual_Delivery_Date = STR_TO_DATE(NULLIF(@Actual_Delivery_Date, ''), '%d-%m-%Y');	
 
 
 
