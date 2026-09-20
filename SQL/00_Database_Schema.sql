@@ -104,9 +104,6 @@ set Date=str_to_date(@Date,'%d-%m-%Y');
 /*-----------------------------------------------------------------------------
                                   Fact_Inventory Setup
 ------------------------------------------------------------------------------*/
-/*-----------------------------------------------------------------------------
-                                  Fact_Inventory Setup
--------------------------------------------------------------------------------*/
 
 CREATE TABLE Fact_Inventory(
     Inventory_Date DATE,
@@ -118,9 +115,3 @@ CREATE TABLE Fact_Inventory(
     Closing_Stock INT,
     Reorder_Level INT
 );
-
-desc fact_inventory;
-
-
-
-
