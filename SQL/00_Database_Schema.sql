@@ -205,8 +205,29 @@ CREATE TABLE Fact_Customer_Order(
     Order_Status VARCHAR(30)
 );
 
-
-
+#Import Fact_Customer_Order data
+LOAD DATA INFILE
+'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Supply_Chain_Cleaned_Data/Fact_Customer_Order.csv'
+INTO TABLE Fact_Customer_Order
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(
+    Order_ID,
+    Order_Line_ID,
+    Customer_ID,
+    Product_ID,
+    Warehouse_ID,
+    @Order_Date,
+    @Ordered_Quantity,
+    Fulfilled_Quantity,
+    Order_Status
+)
+SET
+    Order_Date = STR_TO_DATE(NULLIF(@Order_Date, ''), '%d-%m-%Y'),
+    Ordered_Quantity = NULLIF(@Ordered_Quantity, '');
+   
 
 
 
