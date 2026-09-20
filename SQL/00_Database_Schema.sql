@@ -272,7 +272,17 @@ SET
     Actual_Delivery_Date = STR_TO_DATE(NULLIF(@Actual_Delivery_Date, ''), '%d-%m-%Y');	
 
 
-
+/*-----------------------------------------------------------------------------
+                              Fact_Return Setup
+------------------------------------------------------------------------------*/
+CREATE TABLE Fact_Return(
+    Return_ID VARCHAR(20) PRIMARY KEY,
+    Order_ID VARCHAR(20),
+    Product_ID VARCHAR(10),
+    Return_Date DATE,
+    Returned_Quantity INT,
+    Return_Reason VARCHAR(100)
+);
 
 
 
