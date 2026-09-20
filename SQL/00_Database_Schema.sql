@@ -159,6 +159,31 @@ CREATE TABLE Fact_Purchase_Order(
     PO_Status VARCHAR(30)
 );
 
+# Import Fact_Purchase_Order data
 
-
-
+LOAD DATA INFILE
+'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Supply_Chain_Cleaned_Data/Fact_Purchase_Order.csv'
+INTO TABLE Fact_Purchase_Order
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(
+    PO_ID,
+    PO_Line_ID,
+    Supplier_ID,
+    Product_ID,
+    @Order_Date,
+    @Expected_Delivery_Date,
+    @Actual_Delivery_Date,
+    Ordered_Quantity,
+    Received_Quantity,
+    Planned_Unit_Cost,
+    @Actual_Unit_Cost,
+    PO_Status
+)
+SET
+    Order_Date = STR_TO_DATE(NULLIF(@Order_Date, ''), '%d-%m-%Y'),
+    Expected_Delivery_Date = STR_TO_DATE(NULLIF(@Expected_Delivery_Date, ''), '%d-%m-%Y'),
+    Actual_Delivery_Date = STR_TO_DATE(NULLIF(@Actual_Delivery_Date, ''), '%d-%m-%Y'),
+    Actual_Unit_Cost = NULLIF(@Actual_Unit_Cost, '');
