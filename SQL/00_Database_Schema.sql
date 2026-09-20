@@ -133,3 +133,6 @@ Issued_or_Sold_Quantity,
 Closing_Stock,Reorder_Level)
 Set Inventory_Date=str_to_date(@Inventory_Date,'%d-%m-%Y'),
 Received_Quantity=nullif(@Received_Quantity, '');
+
+Alter table Fact_Inventory
+Add primary key (Inventory_Date,Product_ID,Warehouse_ID);
