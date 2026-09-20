@@ -187,3 +187,36 @@ SET
     Expected_Delivery_Date = STR_TO_DATE(NULLIF(@Expected_Delivery_Date, ''), '%d-%m-%Y'),
     Actual_Delivery_Date = STR_TO_DATE(NULLIF(@Actual_Delivery_Date, ''), '%d-%m-%Y'),
     Actual_Unit_Cost = NULLIF(@Actual_Unit_Cost, '');
+
+
+/*-----------------------------------------------------------------------------
+                              Fact_Customer_Order Setup
+------------------------------------------------------------------------------*/
+
+CREATE TABLE Fact_Customer_Order(
+    Order_ID VARCHAR(20),
+    Order_Line_ID VARCHAR(20) PRIMARY KEY,
+    Customer_ID VARCHAR(10),
+    Product_ID VARCHAR(10),
+    Warehouse_ID VARCHAR(10),
+    Order_Date DATE,
+    Ordered_Quantity INT,
+    Fulfilled_Quantity INT,
+    Order_Status VARCHAR(30)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
