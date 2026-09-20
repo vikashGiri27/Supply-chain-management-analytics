@@ -115,3 +115,21 @@ CREATE TABLE Fact_Inventory(
     Closing_Stock INT,
     Reorder_Level INT
 );
+
+# Import Fact_Inventory data
+
+Load Data Infile 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Supply_Chain_Cleaned_Data/Fact_Inventory.csv'
+Into Table Fact_Inventory
+Fields terminated by ','
+Enclosed by '"'
+Lines terminated by '\n'
+Ignore 1 rows
+(@Inventory_Date,
+Product_ID,
+Warehouse_ID,
+Opening_Stock,
+@Received_Quantity,
+Issued_or_Sold_Quantity,
+Closing_Stock,Reorder_Level)
+Set Inventory_Date=str_to_date(@Inventory_Date,'%d-%m-%Y'),
+Received_Quantity=nullif(@Received_Quantity, '');
