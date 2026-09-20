@@ -284,6 +284,22 @@ CREATE TABLE Fact_Return(
     Return_Reason VARCHAR(100)
 );
 
+# Import Fact_Return data
+
+Load Data Infile 
+'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Supply_Chain_Cleaned_Data/Fact_Return.csv'
+Into table Fact_Return
+Fields terminated by ','
+Enclosed by '"'
+Lines terminated by '\n'
+Ignore 1 rows
+(Return_ID,
+Order_ID,
+Product_ID,
+@Return_Date,
+Returned_Quantity,
+Return_Reason)
+Set Return_Date=str_to_date(@Return_Date,'%d-%m-%Y');
 
 
 
