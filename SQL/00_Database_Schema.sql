@@ -134,5 +134,31 @@ Closing_Stock,Reorder_Level)
 Set Inventory_Date=str_to_date(@Inventory_Date,'%d-%m-%Y'),
 Received_Quantity=nullif(@Received_Quantity, '');
 
+#Add Composite Primary Key :
+
 Alter table Fact_Inventory
 Add primary key (Inventory_Date,Product_ID,Warehouse_ID);
+
+	
+/*-----------------------------------------------------------------------------
+                              Fact_Purchase_Order Setup
+------------------------------------------------------------------------------*/
+
+CREATE TABLE Fact_Purchase_Order(
+    PO_ID VARCHAR(20),
+    PO_Line_ID VARCHAR(20) PRIMARY KEY,
+    Supplier_ID VARCHAR(10),
+    Product_ID VARCHAR(10),
+    Order_Date DATE,
+    Expected_Delivery_Date DATE,
+    Actual_Delivery_Date DATE,
+    Ordered_Quantity INT,
+    Received_Quantity INT,
+    Planned_Unit_Cost DECIMAL(10,2),
+    Actual_Unit_Cost DECIMAL(10,2),
+    PO_Status VARCHAR(30)
+);
+
+
+
+
