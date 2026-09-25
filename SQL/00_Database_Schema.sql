@@ -2,7 +2,7 @@ create database supply_chain_analytics;
 use supply_chain_analytics;
 
 /*-----------------------------------------------------------------------------
-                                     Dim_Product Setup
+										 Dim_Product Setup
 -------------------------------------------------------------------------------*/
 create table Dim_Product(
 Product_ID varchar(10) Primary key,
@@ -22,7 +22,7 @@ LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 
 /*-----------------------------------------------------------------------------
-                                     Dim_Warehouse Setup
+										 Dim_Warehouse Setup
 -------------------------------------------------------------------------------*/
 
 create table Dim_Warehouse
@@ -41,7 +41,7 @@ lines terminated by  '\n'
 Ignore 1 rows;
 
 /*-----------------------------------------------------------------------------
-                                     Dim_Supplier Setup
+										 Dim_Supplier Setup
 ------------------------------------------------------------------------------*/
 create table Dim_Supplier(	
 Supplier_ID varchar(10) primary key,
@@ -60,7 +60,7 @@ Lines terminated by '\n'
 Ignore 1 rows;
 
 /*-----------------------------------------------------------------------------
-                                     Dim_Customer Setup
+										 Dim_Customer Setup
 -------------------------------------------------------------------------------*/
 create table Dim_Customer(
 Customer_ID	varchar(10) primary key,
@@ -78,7 +78,7 @@ Lines terminated by '\n'
 Ignore 1 rows;
 
 /*-----------------------------------------------------------------------------
-                                     Dim_Date Setup
+										 Dim_Date Setup
 -------------------------------------------------------------------------------*/
 Create table Dim_Date(Date date primary key,
 Year int,
@@ -102,18 +102,18 @@ Ignore 1 rows
 set Date=str_to_date(@Date,'%d-%m-%Y');
 
 /*-----------------------------------------------------------------------------
-                                  Fact_Inventory Setup
+									  Fact_Inventory Setup
 ------------------------------------------------------------------------------*/
 
 CREATE TABLE Fact_Inventory(
-    Inventory_Date DATE,
-    Product_ID VARCHAR(10),
-    Warehouse_ID VARCHAR(10),
-    Opening_Stock INT,
-    Received_Quantity INT,
-    Issued_or_Sold_Quantity INT,
-    Closing_Stock INT,
-    Reorder_Level INT
+Inventory_Date DATE,
+Product_ID VARCHAR(10),
+Warehouse_ID VARCHAR(10),
+Opening_Stock INT,
+Received_Quantity INT,
+Issued_or_Sold_Quantity INT,
+Closing_Stock INT,
+Reorder_Level INT
 );
 
 # Import Fact_Inventory data
@@ -139,24 +139,24 @@ Received_Quantity=nullif(@Received_Quantity, '');
 Alter table Fact_Inventory
 Add primary key (Inventory_Date,Product_ID,Warehouse_ID);
 
-	
+		
 /*-----------------------------------------------------------------------------
-                              Fact_Purchase_Order Setup
+								  Fact_Purchase_Order Setup
 ------------------------------------------------------------------------------*/
 
 CREATE TABLE Fact_Purchase_Order(
-    PO_ID VARCHAR(20),
-    PO_Line_ID VARCHAR(20) PRIMARY KEY,
-    Supplier_ID VARCHAR(10),
-    Product_ID VARCHAR(10),
-    Order_Date DATE,
-    Expected_Delivery_Date DATE,
-    Actual_Delivery_Date DATE,
-    Ordered_Quantity INT,
-    Received_Quantity INT,
-    Planned_Unit_Cost DECIMAL(10,2),
-    Actual_Unit_Cost DECIMAL(10,2),
-    PO_Status VARCHAR(30)
+PO_ID VARCHAR(20),
+PO_Line_ID VARCHAR(20) PRIMARY KEY,
+Supplier_ID VARCHAR(10),
+Product_ID VARCHAR(10),
+Order_Date DATE,
+Expected_Delivery_Date DATE,
+Actual_Delivery_Date DATE,
+Ordered_Quantity INT,
+Received_Quantity INT,
+Planned_Unit_Cost DECIMAL(10,2),
+Actual_Unit_Cost DECIMAL(10,2),
+PO_Status VARCHAR(30)
 );
 
 # Import Fact_Purchase_Order data
@@ -169,40 +169,40 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (
-    PO_ID,
-    PO_Line_ID,
-    Supplier_ID,
-    Product_ID,
-    @Order_Date,
-    @Expected_Delivery_Date,
-    @Actual_Delivery_Date,
-    Ordered_Quantity,
-    Received_Quantity,
-    Planned_Unit_Cost,
-    @Actual_Unit_Cost,
-    PO_Status
+PO_ID,
+PO_Line_ID,
+Supplier_ID,
+Product_ID,
+@Order_Date,
+@Expected_Delivery_Date,
+@Actual_Delivery_Date,
+Ordered_Quantity,
+Received_Quantity,
+Planned_Unit_Cost,
+@Actual_Unit_Cost,
+PO_Status
 )
 SET
-    Order_Date = STR_TO_DATE(NULLIF(@Order_Date, ''), '%d-%m-%Y'),
-    Expected_Delivery_Date = STR_TO_DATE(NULLIF(@Expected_Delivery_Date, ''), '%d-%m-%Y'),
-    Actual_Delivery_Date = STR_TO_DATE(NULLIF(@Actual_Delivery_Date, ''), '%d-%m-%Y'),
-    Actual_Unit_Cost = NULLIF(@Actual_Unit_Cost, '');
+Order_Date = STR_TO_DATE(NULLIF(@Order_Date, ''), '%d-%m-%Y'),
+Expected_Delivery_Date = STR_TO_DATE(NULLIF(@Expected_Delivery_Date, ''), '%d-%m-%Y'),
+Actual_Delivery_Date = STR_TO_DATE(NULLIF(@Actual_Delivery_Date, ''), '%d-%m-%Y'),
+Actual_Unit_Cost = NULLIF(@Actual_Unit_Cost, '');
 
 
 /*-----------------------------------------------------------------------------
-                              Fact_Customer_Order Setup
+							  Fact_Customer_Order Setup
 ------------------------------------------------------------------------------*/
 
 CREATE TABLE Fact_Customer_Order(
-    Order_ID VARCHAR(20),
-    Order_Line_ID VARCHAR(20) PRIMARY KEY,
-    Customer_ID VARCHAR(10),
-    Product_ID VARCHAR(10),
-    Warehouse_ID VARCHAR(10),
-    Order_Date DATE,
-    Ordered_Quantity INT,
-    Fulfilled_Quantity INT,
-    Order_Status VARCHAR(30)
+Order_ID VARCHAR(20),
+Order_Line_ID VARCHAR(20) PRIMARY KEY,
+Customer_ID VARCHAR(10),
+Product_ID VARCHAR(10),
+Warehouse_ID VARCHAR(10),
+Order_Date DATE,
+Ordered_Quantity INT,
+Fulfilled_Quantity INT,
+Order_Status VARCHAR(30)
 );
 
 #Import Fact_Customer_Order data
@@ -214,35 +214,35 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (
-    Order_ID,
-    Order_Line_ID,
-    Customer_ID,
-    Product_ID,
-    Warehouse_ID,
-    @Order_Date,
-    @Ordered_Quantity,
-    Fulfilled_Quantity,
-    Order_Status
+Order_ID,
+Order_Line_ID,
+Customer_ID,
+Product_ID,
+Warehouse_ID,
+@Order_Date,
+@Ordered_Quantity,
+Fulfilled_Quantity,
+Order_Status
 )
 SET
-    Order_Date = STR_TO_DATE(NULLIF(@Order_Date, ''), '%d-%m-%Y'),
-    Ordered_Quantity = NULLIF(@Ordered_Quantity, '');
-   
+Order_Date = STR_TO_DATE(NULLIF(@Order_Date, ''), '%d-%m-%Y'),
+Ordered_Quantity = NULLIF(@Ordered_Quantity, '');
+	   
 
 /*-----------------------------------------------------------------------------
-                              Fact_Delivery Setup
+								  Fact_Delivery Setup
 ------------------------------------------------------------------------------*/
 CREATE TABLE Fact_Delivery(
-    Delivery_ID VARCHAR(20) PRIMARY KEY,
-    Order_ID VARCHAR(20),
-    Shipment_Date DATE,
-    Expected_Delivery_Date DATE,
-    Actual_Delivery_Date DATE,
-    Delivery_Status VARCHAR(30),
-    Delivery_Region VARCHAR(50),
-    Delivery_Accuracy_Flag VARCHAR(5),
-    Damage_Flag VARCHAR(5),
-    Carrier_ID VARCHAR(20)
+Delivery_ID VARCHAR(20) PRIMARY KEY,
+Order_ID VARCHAR(20),
+Shipment_Date DATE,
+Expected_Delivery_Date DATE,
+Actual_Delivery_Date DATE,
+Delivery_Status VARCHAR(30),
+Delivery_Region VARCHAR(50),
+Delivery_Accuracy_Flag VARCHAR(5),
+Damage_Flag VARCHAR(5),
+Carrier_ID VARCHAR(20)
 );
 
 #Import Fact_Delivery data
@@ -255,33 +255,33 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (
-    Delivery_ID,
-    Order_ID,
-    @Shipment_Date,
-    @Expected_Delivery_Date,
-    @Actual_Delivery_Date,
-    Delivery_Status,
-    Delivery_Region,
-    Delivery_Accuracy_Flag,
-    Damage_Flag,
-    Carrier_ID
+Delivery_ID,
+Order_ID,
+@Shipment_Date,
+@Expected_Delivery_Date,
+@Actual_Delivery_Date,
+Delivery_Status,
+Delivery_Region,
+Delivery_Accuracy_Flag,
+Damage_Flag,
+Carrier_ID
 )
 SET
-    Shipment_Date = STR_TO_DATE(NULLIF(@Shipment_Date, ''), '%d-%m-%Y'),
-    Expected_Delivery_Date = STR_TO_DATE(NULLIF(@Expected_Delivery_Date, ''), '%d-%m-%Y'),
-    Actual_Delivery_Date = STR_TO_DATE(NULLIF(@Actual_Delivery_Date, ''), '%d-%m-%Y');	
+Shipment_Date = STR_TO_DATE(NULLIF(@Shipment_Date, ''), '%d-%m-%Y'),
+Expected_Delivery_Date = STR_TO_DATE(NULLIF(@Expected_Delivery_Date, ''), '%d-%m-%Y'),
+Actual_Delivery_Date = STR_TO_DATE(NULLIF(@Actual_Delivery_Date, ''), '%d-%m-%Y');	
 
 
 /*-----------------------------------------------------------------------------
-                              Fact_Return Setup
+								  Fact_Return Setup
 ------------------------------------------------------------------------------*/
 CREATE TABLE Fact_Return(
-    Return_ID VARCHAR(20) PRIMARY KEY,
-    Order_ID VARCHAR(20),
-    Product_ID VARCHAR(10),
-    Return_Date DATE,
-    Returned_Quantity INT,
-    Return_Reason VARCHAR(100)
+Return_ID VARCHAR(20) PRIMARY KEY,
+Order_ID VARCHAR(20),
+Product_ID VARCHAR(10),
+Return_Date DATE,
+Returned_Quantity INT,
+Return_Reason VARCHAR(100)
 );
 
 # Import Fact_Return data
@@ -303,7 +303,7 @@ Set Return_Date=str_to_date(@Return_Date,'%d-%m-%Y');
 
 
 /*-------------------------------------------------------------------------------------------
-                            RELATIONSHIP SETUP — FOREIGN KEY CONSTRAINTS
+								RELATIONSHIP SETUP — FOREIGN KEY CONSTRAINTS
 ---------------------------------------------------------------------------------------------*/
 
 #-----Fact_Inventory → Dim_Warehouse
@@ -313,8 +313,12 @@ ADD CONSTRAINT Fk_inventory_warehouse
 FOREIGN KEY (Warehouse_ID)
 REFERENCES Dim_Warehouse(Warehouse_ID);
 
-
-
+#----- Fact_Inventory → Dim_Product
+# Foreign key not created as a physical constraint.
+# Reason: Fact_Inventory contains orphan Product_ID
+# values that do not exist in Dim_Product.
+# Logical relationship:
+# Fact_Inventory.Product_ID → Dim_Product.Product_ID
 
 
 
