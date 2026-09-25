@@ -302,6 +302,18 @@ Return_Reason)
 Set Return_Date=str_to_date(@Return_Date,'%d-%m-%Y');
 
 
+/*-------------------------------------------------------------------------------------------
+                            RELATIONSHIP SETUP — FOREIGN KEY CONSTRAINTS
+---------------------------------------------------------------------------------------------*/
+
+#-----Fact_Inventory → Dim_Warehouse
+
+ALTER TABLE Fact_Inventory
+ADD CONSTRAINT Fk_inventory_warehouse
+FOREIGN KEY (Warehouse_ID)
+REFERENCES Dim_Warehouse(Warehouse_ID);
+
+
 
 
 
