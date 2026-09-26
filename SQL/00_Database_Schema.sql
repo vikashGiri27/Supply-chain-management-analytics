@@ -374,3 +374,10 @@ REFERENCES Dim_Product(Product_ID);
 # Order_ID is not unique in Fact_Customer_Order.
 # Logical relationship:
 # Fact_Return.Order_ID → Fact_Customer_Order.Order_ID
+
+#----- Fact_Inventory → Dim_Date
+
+ALTER TABLE Fact_Inventory
+ADD CONSTRAINT Fk_inventory_date
+FOREIGN KEY (Inventory_Date)
+REFERENCES Dim_Date(Date);
