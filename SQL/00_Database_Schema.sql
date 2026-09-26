@@ -353,3 +353,10 @@ References Dim_Customer(Customer_ID);
 # Reason: Fact_Customer_Order contains orphan Product_ID = 'P9999'.
 # Logical relationship:
 # Fact_Customer_Order.Product_ID → Dim_Product.Product_ID
+
+#----- Fact_Return → Dim_Product
+
+ALTER TABLE Fact_Return
+ADD CONSTRAINT Fk_return_product
+FOREIGN KEY (Product_ID)
+REFERENCES Dim_Product(Product_ID);
