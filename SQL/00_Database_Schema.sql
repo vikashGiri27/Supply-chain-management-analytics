@@ -375,9 +375,16 @@ REFERENCES Dim_Product(Product_ID);
 # Logical relationship:
 # Fact_Return.Order_ID → Fact_Customer_Order.Order_ID
 
-#----- Fact_Inventory → Dim_Date
+#----- Dim_Date -> Fact_Inventory
 
 ALTER TABLE Fact_Inventory
 ADD CONSTRAINT Fk_inventory_date
 FOREIGN KEY (Inventory_Date)
+REFERENCES Dim_Date(Date);
+
+#----- Dim_Date → Fact_Purchase_Order
+
+ALTER TABLE Fact_Purchase_Order
+ADD CONSTRAINT Fk_po_order_date
+FOREIGN KEY (Order_Date)
 REFERENCES Dim_Date(Date);
