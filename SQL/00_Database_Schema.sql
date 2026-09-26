@@ -334,4 +334,8 @@ Add Constraint Fk_po_product
 Foreign Key (Product_ID)
 References Dim_Product(Product_ID);
 
-
+#------ Fact_Customer_Order ->Dim_Warehouse
+Alter Table Fact_Customer_Order
+Add Constraint Fk_customer_order_warehouse
+Foreign Key (Warehouse_ID)
+References Dim_Warehouse(Warehouse_ID);
