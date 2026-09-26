@@ -360,3 +360,10 @@ ALTER TABLE Fact_Return
 ADD CONSTRAINT Fk_return_product
 FOREIGN KEY (Product_ID)
 REFERENCES Dim_Product(Product_ID);
+
+#----- Fact_Delivery → Fact_Customer_Order
+
+# Foreign key not created as a physical constraint.
+# Reason: Fact_Customer_Order is at order-line grain and Order_ID is not unique.
+# Logical relationship:
+# Fact_Delivery.Order_ID → Fact_Customer_Order.Order_ID
