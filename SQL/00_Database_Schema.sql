@@ -367,3 +367,10 @@ REFERENCES Dim_Product(Product_ID);
 # Reason: Fact_Customer_Order is at order-line grain and Order_ID is not unique.
 # Logical relationship:
 # Fact_Delivery.Order_ID → Fact_Customer_Order.Order_ID
+
+#----- Fact_Return → Fact_Customer_Order
+
+# Physical foreign key not created due to Order_ID limitation.
+# Order_ID is not unique in Fact_Customer_Order.
+# Logical relationship:
+# Fact_Return.Order_ID → Fact_Customer_Order.Order_ID
