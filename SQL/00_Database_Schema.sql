@@ -345,3 +345,11 @@ Alter Table Fact_Customer_Order
 Add Constraint Fk_customer_order_customer
 Foreign Key (Customer_ID)
 References Dim_Customer(Customer_ID);
+
+#---- Fact_Customer_Order -> Dim_Product
+#----- Fact_Customer_Order → Dim_Product
+
+# Foreign key not created as a physical constraint.
+# Reason: Fact_Customer_Order contains orphan Product_ID = 'P9999'.
+# Logical relationship:
+# Fact_Customer_Order.Product_ID → Dim_Product.Product_ID
