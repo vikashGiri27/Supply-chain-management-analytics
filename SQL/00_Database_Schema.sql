@@ -325,6 +325,13 @@ REFERENCES Dim_Warehouse(Warehouse_ID);
 Alter table Fact_Purchase_Order
 Add constraint Fk_po_supplier
 foreign key (supplier_ID)
-References Dim_Supplier(Supplier_ID)
+References Dim_Supplier(Supplier_ID);
+
+#------ Fact_Purchase_order -> Dim_Product
+
+Alter Table Fact_Purchase_Order
+Add Constraint Fk_po_product
+Foreign Key (Product_ID)
+References Dim_Product(Product_ID);
 
 
