@@ -320,5 +320,11 @@ REFERENCES Dim_Warehouse(Warehouse_ID);
 # Logical relationship:
 # Fact_Inventory.Product_ID → Dim_Product.Product_ID
 
+#----- Fact_Purchase_order -> Dim_Supplier
+
+Alter table Fact_Purchase_Order
+Add constraint Fk_po_supplier
+foreign key (supplier_ID)
+References Dim_Supplier(Supplier_ID)
 
 
