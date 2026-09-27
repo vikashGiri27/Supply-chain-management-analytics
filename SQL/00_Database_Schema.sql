@@ -511,3 +511,12 @@ ALTER TABLE Fact_Delivery
 ADD CONSTRAINT Fk_delivery_actual_delivery_date
 FOREIGN KEY (Actual_Delivery_Date)
 REFERENCES Dim_Date(Date);
+
+/*=============================================================
+             Dim_Date → Fact_Return — Return_Date
+==============================================================*/
+ALTER TABLE Fact_Return
+ADD CONSTRAINT Fk_return_date
+FOREIGN KEY (Return_Date)
+REFERENCES Dim_Date(Date);
+
