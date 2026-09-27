@@ -440,3 +440,5 @@ SELECT DISTINCT Expected_Delivery_Date
 FROM Fact_Purchase_Order
 WHERE Expected_Delivery_Date >= '2025-01-01'
 ORDER BY Expected_Delivery_Date;
+
+select  * from data_quality_log;
