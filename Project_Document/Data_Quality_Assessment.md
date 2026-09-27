@@ -45,18 +45,18 @@ The dataset was reviewed for:
 - Supplier name consistency
 - Delivery date completeness
 - Basic data and relationship integrity
-- Date-dimension coverage for fact-table date fields
 - Table grain and duplicate business records
+- Date-dimension coverage for fact-table date fields
 
 Excel was used for initial profiling, review, duplicate checks, cleaning, and validation.
 
-SQL validation is being used for relational integrity and analytical validation. Completed SQL checks are documented with their validation results where applicable.
+SQL validation is being used for relational integrity and analytical validation.
 
 ---
 
 ## 4. Data Quality Issue Log
 
-| Table | Data Quality Issue | Source Count | Excel Observed / Cleaned | Treatment | Status |
+| Table | Data Quality Issue | Source Count | Excel / SQL Observed | Treatment | Status |
 |---|---|---:|---:|---|---|
 | Dim_Product | Inconsistent Product_Name casing/spacing | 3 | 3 | Spacing cleaned; no unsupported casing changes applied | Resolved |
 | Dim_Supplier | Inconsistent Supplier_Name casing/spacing | 2 | 2 | Spacing cleaned; no unsupported casing changes applied | Resolved |
@@ -68,38 +68,75 @@ SQL validation is being used for relational integrity and analytical validation.
 | Fact_Purchase_Order | Missing Actual_Delivery_Date for Completed records | 421 | 5,929 | Kept blank; no date was inferred | Revalidation Required |
 | Fact_Purchase_Order | Actual_Delivery_Date < Order_Date | 210 | 6,139 | Retained and flagged for investigation | Revalidation Required |
 | Fact_Purchase_Order | Negative Received_Quantity | 151 | 151 | Retained and flagged for investigation | Investigation |
-| Fact_Purchase_Order | Duplicate PO line records | 151 | 151 removed | Exact duplicate rows removed | Resolved |
+| Fact_Purchase_Order | Duplicate PO line records | 151 | 151 removed | Exact duplicate PO line records removed | Resolved |
+| Fact_Purchase_Order | Dim_Date coverage — Expected_Delivery_Date | 1,080 rows / 22 dates | SQL validation: 0 missing after extension to 2025-01-22 | Dim_Date extended; fact data not modified | Resolved |
+| Fact_Purchase_Order | Dim_Date coverage — Actual_Delivery_Date | 103 rows / 15 distinct dates | Dates identified through 2025-03-24 | Dim_Date to be extended through 2025-03-24; fact data not modified | Revalidation Required |
 | Fact_Customer_Order | Missing Ordered_Quantity | 835 | 835 | Kept blank; no value was inferred | Documented |
 | Fact_Customer_Order | Orphan Product_ID (P9999) | 194 | 194 | Retained and flagged for investigation | Investigation |
-| Fact_Delivery | Missing Expected_Delivery_Date | 682 | 685 | Kept blank; no date was inferred | Documented |
-| Fact_Delivery | Duplicate delivery records | 256 | 256 removed | Exact duplicate rows removed | Resolved |
+| Fact_Delivery | Missing Expected_Delivery_Date | 682 | 685 | Kept blank; no value was inferred | Documented |
+| Fact_Delivery | Duplicate delivery records | 256 | 256 removed | Exact duplicate records removed | Resolved |
 | Fact_Return | Orphan Order_ID (ORD9999999) | 154 | 154 | Retained and flagged for investigation | Investigation |
 
 ---
 
-## 5. Cleaning Treatment Principles
+## 5. Date Dimension Coverage Adjustment
+
+The project source documents define the generated historical dataset as 2023-01-01 to 2024-12-31. During SQL relationship validation, `Fact_Purchase_Order` was found to contain additional delivery-date values in 2025.
+
+### Expected_Delivery_Date
+
+`Fact_Purchase_Order.Expected_Delivery_Date` contained:
+
+- 1,080 affected records
+- 22 distinct dates
+- Date range: 2025-01-01 to 2025-01-22
+
+These dates were retained because they exist in the fact data. `Dim_Date` was extended through 2025-01-22 so the date relationship could be validated.
+
+After the extension, the missing-date validation returned 0 unmatched dates.
+
+### Actual_Delivery_Date
+
+`Fact_Purchase_Order.Actual_Delivery_Date` contains:
+
+- 103 affected records
+- 15 distinct dates
+- Date range: 2025-01-23 to 2025-03-24
+
+To avoid repeated changes to `Dim_Date`, the date dimension should now be extended in one consolidated step through **2025-03-24**.
+
+The required new dates are:
+
+> **2025-01-23 through 2025-03-24 inclusive — 61 dates**
+
+This is a **Dim_Date coverage/model adjustment**, not source-data cleaning. No `Fact_Purchase_Order` date values are being changed, deleted, or inferred.
+
+The previously added dates `2025-01-01 through 2025-01-22` remain valid and are not inserted again.
+
+### Important distinction
+
+The source README describes the generated historical dataset as 2023-01-01 to 2024-12-31. The SQL model now requires additional calendar coverage because the loaded `Fact_Purchase_Order` contains 2025 delivery dates. This implementation adjustment does not change the original source-data description.
+
+---
+
+## 6. Cleaning Treatment Principles
 
 The following principles were followed during data cleaning:
 
 1. Raw data was preserved without modification.
-
 2. Exact duplicate records were removed only when the complete record was duplicated.
-
 3. Missing values were not replaced with guessed, average, mode, or zero values unless an approved business rule existed.
-
 4. Invalid or negative quantities were retained and flagged when no approved correction rule was available.
-
 5. Orphan or unmatched identifiers were retained and flagged rather than deleted or replaced.
-
 6. Product and supplier name spacing inconsistencies were cleaned where the correction was clear.
-
 7. Data quality issues that could not be safely corrected were documented for further investigation.
+8. Date-dimension extensions were treated separately from fact-data cleaning; dates were added to `Dim_Date` only to provide calendar coverage for existing fact records.
 
 ---
 
-## 6. Data Quality Observations
+## 7. Data Quality Observations
 
-### 6.1 Dimension Tables
+### 7.1 Dimension Tables
 
 Dim_Product and Dim_Supplier contained minor product/supplier name consistency issues.
 
@@ -107,17 +144,9 @@ Dim_Customer contained missing Customer_Location values.
 
 Dim_Warehouse did not have a documented cleaning issue requiring modification.
 
-Dim_Date did not contain a source-data quality defect requiring correction. However, an analytical date-coverage adjustment was required during SQL relationship validation because Fact_Purchase_Order.Expected_Delivery_Date contains valid dates from 2025-01-01 to 2025-01-22, while the original Dim_Date source coverage ended on 2024-12-31.
+Dim_Date required a **coverage adjustment** during SQL relationship validation because Fact_Purchase_Order contained 2025 delivery dates.
 
-To support the documented analytical relationship:
-
-`Dim_Date → Fact_Purchase_Order.Expected_Delivery_Date`
-
-22 calendar dates (2025-01-01 to 2025-01-22) were added to the SQL implementation of Dim_Date. This was a model/date-coverage adjustment, not a source-data cleaning correction. The original 2023-01-01 to 2024-12-31 historical scope was not changed.
-
----
-
-### 6.2 Fact_Inventory
+### 7.2 Fact_Inventory
 
 Fact_Inventory contained:
 
@@ -130,9 +159,7 @@ Exact duplicate records were removed.
 
 Missing quantities, negative quantities, and orphan Product_ID values were retained and flagged because no approved correction rule was defined.
 
----
-
-### 6.3 Fact_Purchase_Order
+### 7.3 Fact_Purchase_Order
 
 Fact_Purchase_Order contained:
 
@@ -140,14 +167,15 @@ Fact_Purchase_Order contained:
 - Invalid date sequences where Actual_Delivery_Date was earlier than Order_Date
 - Negative Received_Quantity values
 - Duplicate PO line records
+- 2025 Expected_Delivery_Date and Actual_Delivery_Date values requiring extended Dim_Date coverage
 
 Exact duplicate PO line records were removed.
 
 Missing dates and invalid quantities/date sequences were not artificially corrected and remain documented for investigation.
 
----
+The 2025 delivery dates were not modified. Only the calendar dimension is being extended to support the required analytical relationship.
 
-### 6.4 Fact_Customer_Order
+### 7.4 Fact_Customer_Order
 
 Fact_Customer_Order contained:
 
@@ -158,9 +186,7 @@ Missing quantities were retained as blank.
 
 Orphan Product_ID records were retained and flagged for investigation.
 
----
-
-### 6.5 Fact_Delivery
+### 7.5 Fact_Delivery
 
 Fact_Delivery contained:
 
@@ -171,34 +197,15 @@ Exact duplicate records were removed.
 
 Missing Expected_Delivery_Date values were retained as blank.
 
----
-
-### 6.6 Fact_Return
+### 7.6 Fact_Return
 
 Fact_Return contained orphan Order_ID values that could not be matched to Fact_Customer_Order.
 
 These records were retained and flagged for investigation.
 
-
-### 6.7 Dim_Date Coverage Validation
-
-During SQL relationship validation, Fact_Purchase_Order.Expected_Delivery_Date contained 2025-01-01 to 2025-01-22 dates that were not present in the original Dim_Date coverage.
-
-These dates were retained because they are valid purchase-order expected delivery dates. The SQL implementation of Dim_Date was extended by adding the 22 required calendar dates.
-
-A SQL validation check was then executed to confirm that all non-null Fact_Purchase_Order.Expected_Delivery_Date values have a matching date in Dim_Date.
-
-Validation result:
-
-- Missing dates in Dim_Date: **0**
-- Status: **Validated**
-- Treatment: **Date coverage adjustment in SQL model; not a source-data defect**
-
-This adjustment was made only to support relational integrity and analytical date filtering. The original historical source-data scope remains 2023-01-01 to 2024-12-31.
-
 ---
 
-## 7. Count Discrepancies
+## 8. Count Discrepancies
 
 Some issue counts observed during Excel validation differ from the counts documented in the project source documentation.
 
@@ -213,11 +220,11 @@ Examples include:
 
 These differences were not artificially reconciled.
 
-The Excel observations are recorded as the current working validation results. Further SQL-level validation will be used to confirm the final counts before analytical reporting.
+The Excel observations are recorded as the current working validation results. SQL-level validation is being used to confirm relational integrity and final analytical counts.
 
 ---
 
-## 8. Data Quality Limitations
+## 9. Data Quality Limitations
 
 The following limitations remain relevant to the project:
 
@@ -227,28 +234,33 @@ The following limitations remain relevant to the project:
 - Some delivery and procurement records contain date-quality issues.
 - Fact_Purchase_Order does not contain Warehouse_ID, so purchase-order receiving cannot be directly reconciled to a specific warehouse.
 - Root-cause fields are not directly available in the dataset.
+- The source documentation states a 2023-01-01 to 2024-12-31 historical range, while loaded purchase-order delivery dates require Dim_Date coverage through 2025-03-24.
 
 These limitations must be considered when calculating KPIs and interpreting analytical results.
 
 ---
 
-## 9. Data Quality Status
+## 10. Data Quality Status
 
 The dataset has undergone initial Excel-based profiling, validation, and cleaning.
 
-The cleaned dataset is prepared for the next analytical phase, while unresolved data quality issues remain documented and flagged for further SQL-level validation and investigation.
+SQL relationship validation has identified and documented the required Dim_Date coverage adjustment for Fact_Purchase_Order delivery dates.
 
-No unsupported values were invented to force data completeness.
+The 2025 dates are being handled by extending the calendar dimension rather than modifying fact records.
+
+No unsupported fact values were invented to force data completeness.
 
 ---
 
-## 10. Next Phase
+## 11. Next Phase
 
-The next project phase is:
+After the consolidated Dim_Date coverage extension is completed and validated:
 
 Data Quality Validation
         ↓
 SQL Database Schema
+        ↓
+SQL Relationship Validation
         ↓
 SQL Data Quality Checks
         ↓

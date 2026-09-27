@@ -73,3 +73,13 @@ LEFT JOIN Dim_Date dd
     ON po.Expected_Delivery_Date = dd.Date
 WHERE po.Expected_Delivery_Date IS NOT NULL
   AND dd.Date IS NULL;
+  
+/* 10. Date → Purchase Order Actual Delivery Date */
+/* Date Coverage Validation */
+
+SELECT COUNT(*) AS Missing_Date_In_Dim_Date
+FROM Fact_Purchase_Order po
+LEFT JOIN Dim_Date dd
+    ON po.Actual_Delivery_Date = dd.Date
+WHERE po.Actual_Delivery_Date IS NOT NULL
+  AND dd.Date IS NULL;

@@ -101,14 +101,14 @@ Ignore 1 rows
 (@Date, Year, Quarter, Month, Month_Name, Day, Week_Of_Year, Day_Name, Is_Weekend)
 set Date=str_to_date(@Date,'%d-%m-%Y');
 
-# Dim_Date Coverage Extension - Jan 2025
+# Dim_Date Coverage Extension - Jan to Mar 2025
 
 /*Source-defined historical range: 2023-01-01 to 2024-12-31.
-Fact_Purchase_Order contains Expected_Delivery_Date values from
-2025-01-01 to 2025-01-22.
+Fact_Purchase_Order contains Expected_Delivery_Date and Actual_Delivery_Date
+values extending into 2025.
 These dates are retained in the fact data and are added to Dim_Date
 only to provide matching calendar-date coverage for the analytical
-date relationship.
+date relationships.
 This is a Date Dimension coverage adjustment, NOT data cleaning.*/
 
 INSERT INTO Dim_Date
@@ -131,7 +131,7 @@ WITH RECURSIVE DateRange AS
 
     SELECT DATE_ADD(Date, INTERVAL 1 DAY)
     FROM DateRange
-    WHERE Date < '2025-01-22'
+    WHERE Date < '2025-03-24'
 )
 SELECT
     Date,
@@ -353,92 +353,118 @@ Set Return_Date=str_to_date(@Return_Date,'%d-%m-%Y');
 								RELATIONSHIP SETUP — FOREIGN KEY CONSTRAINTS
 ---------------------------------------------------------------------------------------------*/
 
-#-----Fact_Inventory → Dim_Warehouse
+/*===============================================
+Fact_Inventory → Dim_Warehouse
+=================================================*/
 
 ALTER TABLE Fact_Inventory
 ADD CONSTRAINT Fk_inventory_warehouse
 FOREIGN KEY (Warehouse_ID)
 REFERENCES Dim_Warehouse(Warehouse_ID);
 
-#----- Fact_Inventory → Dim_Product
+
+/*================================================
+             Fact_Inventory → Dim_Product
+=================================================*/
+
 # Foreign key not created as a physical constraint.
 # Reason: Fact_Inventory contains orphan Product_ID
 # values that do not exist in Dim_Product.
 # Logical relationship:
 # Fact_Inventory.Product_ID → Dim_Product.Product_ID
 
-#----- Fact_Purchase_order -> Dim_Supplier
+
+/*==================================================
+       Fact_Purchase_order -> Dim_Supplier
+===================================================*/
 
 Alter table Fact_Purchase_Order
 Add constraint Fk_po_supplier
 foreign key (supplier_ID)
 References Dim_Supplier(Supplier_ID);
 
-#------ Fact_Purchase_order -> Dim_Product
+/*===================================================
+         Fact_Purchase_order -> Dim_Product
+=====================================================*/
 
 Alter Table Fact_Purchase_Order
 Add Constraint Fk_po_product
 Foreign Key (Product_ID)
 References Dim_Product(Product_ID);
 
-#------ Fact_Customer_Order ->Dim_Warehouse
+
+/*======================================================
+         Fact_Customer_Order ->Dim_Warehouse
+========================================================*/
 Alter Table Fact_Customer_Order
 Add Constraint Fk_customer_order_warehouse
 Foreign Key (Warehouse_ID)
 References Dim_Warehouse(Warehouse_ID);
 
-#----- Fact_Customer_Order -> Dim_customer
+/*========================================================
+             Fact_Customer_Order -> Dim_customer
+==========================================================*/
 Alter Table Fact_Customer_Order
 Add Constraint Fk_customer_order_customer
 Foreign Key (Customer_ID)
 References Dim_Customer(Customer_ID);
 
-#---- Fact_Customer_Order -> Dim_Product
-#----- Fact_Customer_Order → Dim_Product
+/*==========================================================
+           Fact_Customer_Order → Dim_Product
+============================================================*/
 
 # Foreign key not created as a physical constraint.
 # Reason: Fact_Customer_Order contains orphan Product_ID = 'P9999'.
 # Logical relationship:
 # Fact_Customer_Order.Product_ID → Dim_Product.Product_ID
 
-#----- Fact_Return → Dim_Product
+/*============================================================
+Fact_Return → Dim_Product
+==============================================================*/
 
 ALTER TABLE Fact_Return
 ADD CONSTRAINT Fk_return_product
 FOREIGN KEY (Product_ID)
 REFERENCES Dim_Product(Product_ID);
 
-#----- Fact_Delivery → Fact_Customer_Order
-
+/*================================================================
+                 Fact_Delivery → Fact_Customer_Order
+=================================================================*/
 # Foreign key not created as a physical constraint.
-# Reason: Fact_Customer_Order is at order-line grain and Order_ID is not unique.
+# Reason: Fact_Customer_Order is at order-line grain
+# and Order_ID is not unique.
 # Logical relationship:
 # Fact_Delivery.Order_ID → Fact_Customer_Order.Order_ID
 
-#----- Fact_Return → Fact_Customer_Order
+/*==================================================================
+           Fact_Return → Fact_Customer_Order
+===================================================================*/
 
 # Physical foreign key not created due to Order_ID limitation.
 # Order_ID is not unique in Fact_Customer_Order.
 # Logical relationship:
 # Fact_Return.Order_ID → Fact_Customer_Order.Order_ID
 
-#----- Dim_Date -> Fact_Inventory
-
+/*==================================================================
+                     Dim_Date -> Fact_Inventory
+===================================================================*/
 ALTER TABLE Fact_Inventory
 ADD CONSTRAINT Fk_inventory_date
 FOREIGN KEY (Inventory_Date)
 REFERENCES Dim_Date(Date);
 
-#----- Dim_Date → Fact_Purchase_Order
+/*==================================================================
+                  Dim_Date → Fact_Purchase_Order
+===================================================================*/
 
 ALTER TABLE Fact_Purchase_Order
 ADD CONSTRAINT Fk_po_order_date
 FOREIGN KEY (Order_Date)
 REFERENCES Dim_Date(Date);
 
-#----- Dim_Date → Fact_Purchase_Order
-#          Expected_Delivery_Date
-
+/*==================================================================
+     Dim_Date → Fact_Purchase_Order- Expected_Delivery_Date
+====================================================================*/
 ALTER TABLE Fact_Purchase_Order
 ADD CONSTRAINT Fk_po_expected_delivery_date
 FOREIGN KEY (Expected_Delivery_Date)
