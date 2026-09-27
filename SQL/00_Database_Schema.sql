@@ -479,3 +479,11 @@ ADD CONSTRAINT Fk_po_actual_delivery_date
 FOREIGN KEY (Actual_Delivery_Date)
 REFERENCES Dim_Date(Date);
 
+/*============================================================
+        Dim_Date → Fact_Customer_Order - Order_Date
+==============================================================*/
+
+ALTER TABLE Fact_Customer_Order
+ADD CONSTRAINT Fk_customer_order_date
+FOREIGN KEY (Order_Date)
+REFERENCES Dim_Date(Date);
