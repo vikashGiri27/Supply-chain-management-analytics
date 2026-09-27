@@ -45,11 +45,12 @@ The dataset was reviewed for:
 - Supplier name consistency
 - Delivery date completeness
 - Basic data and relationship integrity
+- Date-dimension coverage for fact-table date fields
 - Table grain and duplicate business records
 
 Excel was used for initial profiling, review, duplicate checks, cleaning, and validation.
 
-SQL validation will be used later for relational integrity and analytical validation.
+SQL validation is being used for relational integrity and analytical validation. Completed SQL checks are documented with their validation results where applicable.
 
 ---
 
@@ -104,7 +105,15 @@ Dim_Product and Dim_Supplier contained minor product/supplier name consistency i
 
 Dim_Customer contained missing Customer_Location values.
 
-Dim_Warehouse and Dim_Date did not have a documented cleaning issue requiring modification.
+Dim_Warehouse did not have a documented cleaning issue requiring modification.
+
+Dim_Date did not contain a source-data quality defect requiring correction. However, an analytical date-coverage adjustment was required during SQL relationship validation because Fact_Purchase_Order.Expected_Delivery_Date contains valid dates from 2025-01-01 to 2025-01-22, while the original Dim_Date source coverage ended on 2024-12-31.
+
+To support the documented analytical relationship:
+
+`Dim_Date → Fact_Purchase_Order.Expected_Delivery_Date`
+
+22 calendar dates (2025-01-01 to 2025-01-22) were added to the SQL implementation of Dim_Date. This was a model/date-coverage adjustment, not a source-data cleaning correction. The original 2023-01-01 to 2024-12-31 historical scope was not changed.
 
 ---
 
@@ -169,6 +178,23 @@ Missing Expected_Delivery_Date values were retained as blank.
 Fact_Return contained orphan Order_ID values that could not be matched to Fact_Customer_Order.
 
 These records were retained and flagged for investigation.
+
+
+### 6.7 Dim_Date Coverage Validation
+
+During SQL relationship validation, Fact_Purchase_Order.Expected_Delivery_Date contained 2025-01-01 to 2025-01-22 dates that were not present in the original Dim_Date coverage.
+
+These dates were retained because they are valid purchase-order expected delivery dates. The SQL implementation of Dim_Date was extended by adding the 22 required calendar dates.
+
+A SQL validation check was then executed to confirm that all non-null Fact_Purchase_Order.Expected_Delivery_Date values have a matching date in Dim_Date.
+
+Validation result:
+
+- Missing dates in Dim_Date: **0**
+- Status: **Validated**
+- Treatment: **Date coverage adjustment in SQL model; not a source-data defect**
+
+This adjustment was made only to support relational integrity and analytical date filtering. The original historical source-data scope remains 2023-01-01 to 2024-12-31.
 
 ---
 
