@@ -63,3 +63,13 @@ FROM Fact_Customer_Order co
 LEFT JOIN Dim_Customer dc
     ON co.Customer_ID = dc.Customer_ID
 WHERE dc.Customer_ID IS NULL;
+
+/* 9. Date → Purchase Order Expected Delivery Date */
+/* Date Coverage Validation */
+
+SELECT COUNT(*) AS Missing_Date_In_Dim_Date
+FROM Fact_Purchase_Order po
+LEFT JOIN Dim_Date dd
+    ON po.Expected_Delivery_Date = dd.Date
+WHERE po.Expected_Delivery_Date IS NOT NULL
+  AND dd.Date IS NULL;
