@@ -495,3 +495,12 @@ ALTER TABLE Fact_Delivery
 ADD CONSTRAINT Fk_delivery_shipment_date
 FOREIGN KEY (Shipment_Date)
 REFERENCES Dim_Date(Date);
+
+/*=============================================================
+      Dim_Date → Fact_Delivery — Expected_Delivery_Date
+==============================================================*/
+ALTER TABLE Fact_Delivery
+ADD CONSTRAINT Fk_delivery_expected_delivery_date
+FOREIGN KEY (Expected_Delivery_Date)
+REFERENCES Dim_Date(Date);
+
