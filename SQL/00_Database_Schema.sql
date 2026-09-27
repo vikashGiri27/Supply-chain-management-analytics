@@ -101,6 +101,53 @@ Ignore 1 rows
 (@Date, Year, Quarter, Month, Month_Name, Day, Week_Of_Year, Day_Name, Is_Weekend)
 set Date=str_to_date(@Date,'%d-%m-%Y');
 
+# Dim_Date Coverage Extension - Jan 2025
+
+/*Source-defined historical range: 2023-01-01 to 2024-12-31.
+Fact_Purchase_Order contains Expected_Delivery_Date values from
+2025-01-01 to 2025-01-22.
+These dates are retained in the fact data and are added to Dim_Date
+only to provide matching calendar-date coverage for the analytical
+date relationship.
+This is a Date Dimension coverage adjustment, NOT data cleaning.*/
+
+INSERT INTO Dim_Date
+(
+    Date,
+    Year,
+    Quarter,
+    Month,
+    Month_Name,
+    Day,
+    Week_Of_Year,
+    Day_Name,
+    Is_Weekend
+)
+WITH RECURSIVE DateRange AS
+(
+    SELECT DATE('2025-01-01') AS Date
+
+    UNION ALL
+
+    SELECT DATE_ADD(Date, INTERVAL 1 DAY)
+    FROM DateRange
+    WHERE Date < '2025-01-22'
+)
+SELECT
+    Date,
+    YEAR(Date),
+    CONCAT('Q', QUARTER(Date)),
+    MONTH(Date),
+    MONTHNAME(Date),
+    DAY(Date),
+    WEEK(Date, 3),
+    DAYNAME(Date),
+    CASE
+        WHEN DAYOFWEEK(Date) IN (1, 7) THEN 'True'
+        ELSE 'False'
+    END
+FROM DateRange;
+
 /*-----------------------------------------------------------------------------
 									  Fact_Inventory Setup
 ------------------------------------------------------------------------------*/
@@ -388,3 +435,8 @@ ALTER TABLE Fact_Purchase_Order
 ADD CONSTRAINT Fk_po_order_date
 FOREIGN KEY (Order_Date)
 REFERENCES Dim_Date(Date);
+
+SELECT DISTINCT Expected_Delivery_Date
+FROM Fact_Purchase_Order
+WHERE Expected_Delivery_Date >= '2025-01-01'
+ORDER BY Expected_Delivery_Date;
