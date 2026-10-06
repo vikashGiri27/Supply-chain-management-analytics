@@ -83,3 +83,157 @@ LEFT JOIN Dim_Date dd
     ON po.Actual_Delivery_Date = dd.Date
 WHERE po.Actual_Delivery_Date IS NOT NULL
   AND dd.Date IS NULL;
+
+/*==============================================================
+   FINAL DATA QUALITY REVALIDATION
+   Run after the Dim_Date extension through 2025-03-24.
+==============================================================*/
+
+/* 11. PO — Completed records missing Actual_Delivery_Date */
+SELECT COUNT(*) AS Missing_Actual_Delivery_Completed
+FROM Fact_Purchase_Order
+WHERE PO_Status = 'Completed'
+  AND Actual_Delivery_Date IS NULL;
+
+
+/* 12. PO — Actual_Delivery_Date earlier than Order_Date */
+SELECT COUNT(*) AS Invalid_Actual_Delivery_Before_Order
+FROM Fact_Purchase_Order
+WHERE Actual_Delivery_Date IS NOT NULL
+  AND Order_Date IS NOT NULL
+  AND Actual_Delivery_Date < Order_Date;
+
+
+/* 13. Dim_Date — current coverage */
+SELECT MIN(Date) AS Dim_Date_Min,
+       MAX(Date) AS Dim_Date_Max,
+       COUNT(*) AS Dim_Date_Row_Count
+FROM Dim_Date;
+
+
+/* 14. Inventory — date coverage */
+SELECT COUNT(*) AS Missing_Inventory_Date_In_Dim_Date
+FROM Fact_Inventory fi
+LEFT JOIN Dim_Date dd
+    ON fi.Inventory_Date = dd.Date
+WHERE fi.Inventory_Date IS NOT NULL
+  AND dd.Date IS NULL;
+
+
+/* 15. PO — Order_Date coverage */
+SELECT COUNT(*) AS Missing_PO_Order_Date_In_Dim_Date
+FROM Fact_Purchase_Order po
+LEFT JOIN Dim_Date dd
+    ON po.Order_Date = dd.Date
+WHERE po.Order_Date IS NOT NULL
+  AND dd.Date IS NULL;
+
+
+/* 16. Customer Order — Order_Date coverage */
+SELECT COUNT(*) AS Missing_Customer_Order_Date_In_Dim_Date
+FROM Fact_Customer_Order co
+LEFT JOIN Dim_Date dd
+    ON co.Order_Date = dd.Date
+WHERE co.Order_Date IS NOT NULL
+  AND dd.Date IS NULL;
+
+
+/* 17. Delivery — Shipment_Date coverage */
+SELECT COUNT(*) AS Missing_Shipment_Date_In_Dim_Date
+FROM Fact_Delivery fd
+LEFT JOIN Dim_Date dd
+    ON fd.Shipment_Date = dd.Date
+WHERE fd.Shipment_Date IS NOT NULL
+  AND dd.Date IS NULL;
+
+
+/* 18. Delivery — Expected_Delivery_Date coverage */
+SELECT COUNT(*) AS Missing_Delivery_Expected_Date_In_Dim_Date
+FROM Fact_Delivery fd
+LEFT JOIN Dim_Date dd
+    ON fd.Expected_Delivery_Date = dd.Date
+WHERE fd.Expected_Delivery_Date IS NOT NULL
+  AND dd.Date IS NULL;
+
+
+/* 19. Delivery — Actual_Delivery_Date coverage */
+SELECT COUNT(*) AS Missing_Delivery_Actual_Date_In_Dim_Date
+FROM Fact_Delivery fd
+LEFT JOIN Dim_Date dd
+    ON fd.Actual_Delivery_Date = dd.Date
+WHERE fd.Actual_Delivery_Date IS NOT NULL
+  AND dd.Date IS NULL;
+
+
+/* 20. Return — Return_Date coverage */
+SELECT COUNT(*) AS Missing_Return_Date_In_Dim_Date
+FROM Fact_Return fr
+LEFT JOIN Dim_Date dd
+    ON fr.Return_Date = dd.Date
+WHERE fr.Return_Date IS NOT NULL
+  AND dd.Date IS NULL;
+
+
+/* 21. Return -> Customer Order logical Order_ID validation */
+SELECT COUNT(*) AS Orphan_Order_Return
+FROM Fact_Return r
+LEFT JOIN (
+    SELECT DISTINCT Order_ID
+    FROM Fact_Customer_Order
+) co
+    ON r.Order_ID = co.Order_ID
+WHERE co.Order_ID IS NULL;
+
+
+/* 22. Delivery -> Customer Order logical Order_ID validation */
+SELECT COUNT(*) AS Orphan_Order_Delivery
+FROM Fact_Delivery d
+LEFT JOIN (
+    SELECT DISTINCT Order_ID
+    FROM Fact_Customer_Order
+) co
+    ON d.Order_ID = co.Order_ID
+WHERE co.Order_ID IS NULL;
+
+
+/* 23. Inventory — negative Issued_or_Sold_Quantity */
+SELECT COUNT(*) AS Negative_Issued_or_Sold_Quantity
+FROM Fact_Inventory
+WHERE Issued_or_Sold_Quantity < 0;
+
+
+/* 24. Inventory — missing Received_Quantity */
+SELECT COUNT(*) AS Missing_Received_Quantity
+FROM Fact_Inventory
+WHERE Received_Quantity IS NULL;
+
+
+/* 25. Purchase Order — negative Received_Quantity */
+SELECT COUNT(*) AS Negative_Received_Quantity_PO
+FROM Fact_Purchase_Order
+WHERE Received_Quantity < 0;
+
+
+/* 26. Customer Order — missing Ordered_Quantity */
+SELECT COUNT(*) AS Missing_Ordered_Quantity_Customer_Order
+FROM Fact_Customer_Order
+WHERE Ordered_Quantity IS NULL;
+
+
+/* 27. Delivery — missing Expected_Delivery_Date */
+SELECT COUNT(*) AS Missing_Expected_Delivery_Date_Delivery
+FROM Fact_Delivery
+WHERE Expected_Delivery_Date IS NULL;
+
+
+/* 28. Final Dim_Date coverage status */
+SELECT CASE
+         WHEN MIN(Date) = '2023-01-01'
+          AND MAX(Date) = '2025-03-24'
+         THEN 'PASS'
+         ELSE 'REVIEW'
+       END AS Dim_Date_Coverage_Status,
+       MIN(Date) AS Min_Date,
+       MAX(Date) AS Max_Date,
+       COUNT(*) AS Total_Dim_Date_Rows
+FROM Dim_Date;

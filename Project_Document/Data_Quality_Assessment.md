@@ -61,19 +61,19 @@ SQL validation is being used for relational integrity and analytical validation.
 | Dim_Product | Inconsistent Product_Name casing/spacing | 3 | 3 | Spacing cleaned; no unsupported casing changes applied | Resolved |
 | Dim_Supplier | Inconsistent Supplier_Name casing/spacing | 2 | 2 | Spacing cleaned; no unsupported casing changes applied | Resolved |
 | Dim_Customer | Missing Customer_Location | 6 | 6 | Kept blank; no value was inferred | Documented |
-| Fact_Inventory | Negative Issued_or_Sold_Quantity | 1,076 | 1,013 | Retained and flagged for investigation | Investigation |
-| Fact_Inventory | Missing Received_Quantity | 7,178 | 7,183 | Kept blank; no value was inferred | Documented |
+| Fact_Inventory | Negative Issued_or_Sold_Quantity | 1,076 | 1,011 (latest SQL) | Retained and flagged for investigation; source/earlier observed counts differ and are documented | Investigation |
+| Fact_Inventory | Missing Received_Quantity | 7,178 | 7,178 (latest SQL) | Kept blank; no value was inferred | Documented |
 | Fact_Inventory | Exact duplicate records | 717 | 716 removed | Exact duplicate rows removed | Resolved |
 | Fact_Inventory | Orphan Product_ID (P9999) | 574 | 574 | Retained and flagged for investigation | Investigation |
-| Fact_Purchase_Order | Missing Actual_Delivery_Date for Completed records | 421 | 5,929 | Kept blank; no date was inferred | Revalidation Required |
-| Fact_Purchase_Order | Actual_Delivery_Date < Order_Date | 210 | 6,139 | Retained and flagged for investigation | Revalidation Required |
+| Fact_Purchase_Order | Missing Actual_Delivery_Date for Completed records | 421 | 0 (latest SQL) | No Completed records currently missing Actual_Delivery_Date | Resolved / Revalidated |
+| Fact_Purchase_Order | Actual_Delivery_Date < Order_Date | 210 | 210 (latest SQL) | Retained and flagged for investigation; invalid date sequence remains | Investigation |
 | Fact_Purchase_Order | Negative Received_Quantity | 151 | 151 | Retained and flagged for investigation | Investigation |
 | Fact_Purchase_Order | Duplicate PO line records | 151 | 151 removed | Exact duplicate PO line records removed | Resolved |
 | Fact_Purchase_Order | Dim_Date coverage — Expected_Delivery_Date | 1,080 rows / 22 dates | SQL validation: 0 missing after extension to 2025-01-22 | Dim_Date extended; fact data not modified | Resolved |
-| Fact_Purchase_Order | Dim_Date coverage — Actual_Delivery_Date | 103 rows / 15 distinct dates | Dates identified through 2025-03-24 | Dim_Date to be extended through 2025-03-24; fact data not modified | Revalidation Required |
+| Fact_Purchase_Order | Dim_Date coverage — Actual_Delivery_Date | 103 rows / 15 distinct dates | 0 unmatched dates (latest SQL) | Dim_Date extended through 2025-03-24; fact data not modified | Resolved / Revalidated |
 | Fact_Customer_Order | Missing Ordered_Quantity | 835 | 835 | Kept blank; no value was inferred | Documented |
 | Fact_Customer_Order | Orphan Product_ID (P9999) | 194 | 194 | Retained and flagged for investigation | Investigation |
-| Fact_Delivery | Missing Expected_Delivery_Date | 682 | 685 | Kept blank; no value was inferred | Documented |
+| Fact_Delivery | Missing Expected_Delivery_Date | 682 | 682 (latest SQL) | Kept blank; no value was inferred | Documented |
 | Fact_Delivery | Duplicate delivery records | 256 | 256 removed | Exact duplicate records removed | Resolved |
 | Fact_Return | Orphan Order_ID (ORD9999999) | 154 | 154 | Retained and flagged for investigation | Investigation |
 
@@ -103,21 +103,51 @@ After the extension, the missing-date validation returned 0 unmatched dates.
 - 15 distinct dates
 - Date range: 2025-01-23 to 2025-03-24
 
-To avoid repeated changes to `Dim_Date`, the date dimension should now be extended in one consolidated step through **2025-03-24**.
+The `Dim_Date` table has now been extended in one consolidated step through **2025-03-24**.
 
-The required new dates are:
+The consolidated 2025 extension covers:
 
-> **2025-01-23 through 2025-03-24 inclusive — 61 dates**
+> **2025-01-01 through 2025-03-24 inclusive — 83 dates**
+
+The previously added `2025-01-01` through `2025-01-22` dates remain valid and were not duplicated.
 
 This is a **Dim_Date coverage/model adjustment**, not source-data cleaning. No `Fact_Purchase_Order` date values are being changed, deleted, or inferred.
 
-The previously added dates `2025-01-01 through 2025-01-22` remain valid and are not inserted again.
+The `Fact_Purchase_Order.Actual_Delivery_Date` coverage validation was executed after the consolidated extension and returned **0 unmatched dates**.
 
 ### Important distinction
 
 The source README describes the generated historical dataset as 2023-01-01 to 2024-12-31. The SQL model now requires additional calendar coverage because the loaded `Fact_Purchase_Order` contains 2025 delivery dates. This implementation adjustment does not change the original source-data description.
 
 ---
+
+## 6. SQL Revalidation Results
+
+The final SQL revalidation queries were executed after the relationship setup and Dim_Date extension. The executed results are recorded below.
+
+| Validation | Latest SQL Result | Status |
+|---|---:|---|
+| Completed PO records missing `Actual_Delivery_Date` | 0 | PASS |
+| PO `Actual_Delivery_Date < Order_Date` | 210 | Investigation |
+| PO `Expected_Delivery_Date` → `Dim_Date` unmatched | 0 | PASS |
+| PO `Actual_Delivery_Date` → `Dim_Date` unmatched | 0 | PASS |
+| `Dim_Date` coverage | 2023-01-01 to 2025-03-24; 814 rows | PASS |
+| Inventory → `Dim_Date` unmatched | 0 | PASS |
+| PO `Order_Date` → `Dim_Date` unmatched | 0 | PASS |
+| Customer Order `Order_Date` → `Dim_Date` unmatched | 0 | PASS |
+| Delivery `Shipment_Date` → `Dim_Date` unmatched | 0 | PASS |
+| Delivery `Expected_Delivery_Date` → `Dim_Date` unmatched | 0 | PASS |
+| Delivery `Actual_Delivery_Date` → `Dim_Date` unmatched | 0 | PASS |
+| Return `Return_Date` → `Dim_Date` unmatched | 0 | PASS |
+| Delivery `Order_ID` → Customer Order logical match | 0 unmatched | PASS |
+| Return `Order_ID` → Customer Order logical match | 154 unmatched | Investigation |
+| Inventory negative `Issued_or_Sold_Quantity` | 1,011 | Investigation |
+| Inventory missing `Received_Quantity` | 7,178 | Documented |
+| PO negative `Received_Quantity` | 151 | Investigation |
+| Customer Order missing `Ordered_Quantity` | 835 | Documented |
+| Delivery missing `Expected_Delivery_Date` | 682 | Documented |
+
+**Important:** SQL validation being complete does not mean every data-quality issue is zero. Residual issues are intentionally retained and documented where the project has no approved correction rule.
 
 ## 6. Cleaning Treatment Principles
 
@@ -244,17 +274,19 @@ These limitations must be considered when calculating KPIs and interpreting anal
 
 The dataset has undergone initial Excel-based profiling, validation, and cleaning.
 
-SQL relationship validation has identified and documented the required Dim_Date coverage adjustment for Fact_Purchase_Order delivery dates.
+SQL relationship validation and final SQL data-quality revalidation have been completed for the documented model relationships and date coverage checks.
 
 The 2025 dates are being handled by extending the calendar dimension rather than modifying fact records.
 
 No unsupported fact values were invented to force data completeness.
 
+**Final DQ phase status:** Validation is complete, with residual documented/investigation issues remaining. These issues are not silently corrected or deleted because no approved business correction rule is defined in the project source.
+
 ---
 
 ## 11. Next Phase
 
-After the consolidated Dim_Date coverage extension is completed and validated:
+The following phases are now complete:
 
 Data Quality Validation
         ↓
@@ -263,11 +295,24 @@ SQL Database Schema
 SQL Relationship Validation
         ↓
 SQL Data Quality Checks
-        ↓
-SQL Analysis
-        ↓
-KPI Calculation
-        ↓
-Diagnostic Analysis
-        ↓
-Power BI Development
+
+### Next project phase
+
+**SQL Data Analysis**
+
+Approved analysis sequence:
+
+1. Inventory Analysis
+2. Supplier & Procurement Analysis
+3. Order Fulfillment Analysis
+4. Delivery Analysis
+5. Diagnostic Analysis
+6. KPI Validation
+7. Power BI Data Model
+8. DAX Measures
+9. Dashboard Development
+10. SQL vs Power BI Validation
+11. Business Insights
+12. Business Recommendations
+
+No additional relationship is currently required by the BRD, Data Dictionary, or Implementation Guide relationship mapping. The current model is covered by the implemented physical relationships plus the documented logical relationships where physical FK constraints are inappropriate because of orphan keys or non-unique `Order_ID` grain.
