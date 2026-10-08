@@ -39,3 +39,28 @@ GROUP BY
     w.Warehouse_Name
 ORDER BY Total_Inventory DESC;
 
+/*---------------------------------------------------------------------
+ BQ3. How does inventory change over time?
+-----------------------------------------------------------------------*/
+WITH Inventory_Movement_Base AS
+(
+SELECT
+Product_ID,
+Warehouse_ID,
+Inventory_Date,
+Closing_Stock,
+LAG(Closing_Stock) OVER (
+PARTITION BY Product_ID, Warehouse_ID
+ORDER BY Inventory_Date
+) AS Previous_Closing_Stock
+FROM Fact_Inventory)
+SELECT
+Product_ID,
+Warehouse_ID,
+Inventory_Date,
+Closing_Stock,
+Previous_Closing_Stock,
+Closing_Stock - Previous_Closing_Stock AS Inventory_Change
+FROM Inventory_Movement_Base
+ORDER BY Product_ID, Warehouse_ID, Inventory_Date;
+
