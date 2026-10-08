@@ -64,3 +64,38 @@ Closing_Stock - Previous_Closing_Stock AS Inventory_Change
 FROM Inventory_Movement_Base
 ORDER BY Product_ID, Warehouse_ID, Inventory_Date;
 
+/*----------------------------------------------------
+How does inventory vary across warehouses?
+------------------------------------------------------*/
+
+SELECT
+w.Warehouse_ID,
+w.Warehouse_Name,
+w.Warehouse_Location,
+SUM(i.Closing_Stock) AS Warehouse_Inventory_Quantity
+FROM Fact_Inventory i
+INNER JOIN Dim_Warehouse w
+ON i.Warehouse_ID = w.Warehouse_ID
+GROUP BY
+w.Warehouse_ID,
+w.Warehouse_Name,
+w.Warehouse_Location
+ORDER BY
+Warehouse_Inventory_Quantity DESC;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
