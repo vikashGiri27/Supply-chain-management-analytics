@@ -65,7 +65,7 @@ FROM Inventory_Movement_Base
 ORDER BY Product_ID, Warehouse_ID, Inventory_Date;
 
 /*----------------------------------------------------
-How does inventory vary across warehouses?
+BQ4. How does inventory vary across warehouses?
 ------------------------------------------------------*/
 
 SELECT
@@ -85,17 +85,43 @@ Warehouse_Inventory_Quantity DESC;
 
 
 
+/*--------------------------------------------------------------------------------
+BQ9: Analyze monthly inventory movement and stock held by product and warehouse.
+----------------------------------------------------------------------------------*/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+WITH Monthly_Inventory AS (
+SELECT
+Product_ID,
+Warehouse_ID,
+Inventory_Date,
+Opening_Stock,
+Issued_or_Sold_Quantity,
+Closing_Stock,
+DATE_FORMAT(Inventory_Date, '%Y-%m') AS Inventory_Month,
+ROW_NUMBER() OVER (
+PARTITION BY Product_ID, Warehouse_ID, DATE_FORMAT(Inventory_Date, '%Y-%m')
+ORDER BY Inventory_Date
+) AS First_Row,
+ROW_NUMBER() OVER (
+PARTITION BY Product_ID, Warehouse_ID, DATE_FORMAT(Inventory_Date, '%Y-%m')
+ORDER BY Inventory_Date DESC
+) AS Last_Row
+FROM Fact_Inventory
+)
+SELECT
+Product_ID,
+Warehouse_ID,
+Inventory_Month,
+MAX(CASE WHEN First_Row = 1 THEN Opening_Stock END) AS Month_Opening_Stock,
+SUM(Issued_or_Sold_Quantity) AS Total_Issued_Sold,
+AVG(Closing_Stock) AS Average_Closing_Stock,
+MAX(CASE WHEN Last_Row = 1 THEN Closing_Stock END) AS Month_End_Closing_Stock
+FROM Monthly_Inventory
+GROUP BY
+Product_ID,
+Warehouse_ID,
+Inventory_Month
+ORDER BY
+Product_ID,
+Warehouse_ID,
+Inventory_Month;
