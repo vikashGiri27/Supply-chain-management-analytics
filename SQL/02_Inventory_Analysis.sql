@@ -83,10 +83,8 @@ w.Warehouse_Location
 ORDER BY
 Warehouse_Inventory_Quantity DESC;
 
-
-
 /*--------------------------------------------------------------------------------
-BQ9: Analyze monthly inventory movement and stock held by product and warehouse.
+BQ5: Analyze monthly inventory movement and stock held by product and warehouse.
 ----------------------------------------------------------------------------------*/
 
 WITH Monthly_Inventory AS (
@@ -125,3 +123,41 @@ ORDER BY
 Product_ID,
 Warehouse_ID,
 Inventory_Month;
+
+
+/*----------------------------------------------------------
+BQ5:Identify warehouses with the highest stockout frequency.
+----------------------------------------------------------*/
+
+SELECT
+i.Warehouse_ID,
+w.Warehouse_Name,
+w.Warehouse_Location,
+COUNT(i.Closing_Stock) AS Stockout_Count
+FROM Fact_Inventory i
+INNER JOIN Dim_Warehouse w
+ON i.Warehouse_ID = w.Warehouse_ID
+WHERE i.Closing_Stock = 0
+GROUP BY
+i.Warehouse_ID,
+w.Warehouse_Name,
+w.Warehouse_Location
+ORDER BY Stockout_Count DESC;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
