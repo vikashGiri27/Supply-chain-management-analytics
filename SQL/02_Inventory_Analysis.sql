@@ -187,17 +187,25 @@ i.Closing_Stock DESC,
 i.Warehouse_ID;
 
 
+/*-------------------------------------------------------
+BQ8 — Inventory Availability vs Customer Order Demand
+-------------------------------------------------------*/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+SELECT
+i.Product_ID AS Inventory_Product_ID,
+i.Warehouse_ID AS Inventory_Warehouse_ID,
+i.Inventory_Date,
+i.Closing_Stock,
+c.Product_ID AS Order_Product_ID,
+c.Warehouse_ID AS Order_Warehouse_ID,
+c.Order_Date,
+c.Ordered_Quantity
+FROM Fact_Inventory i
+INNER JOIN Fact_Customer_Order c
+ON i.Product_ID = c.Product_ID
+AND i.Warehouse_ID = c.Warehouse_ID
+AND i.Inventory_Date = c.Order_Date
+ORDER BY
+i.Product_ID,
+i.Warehouse_ID,
+i.Inventory_Date;
