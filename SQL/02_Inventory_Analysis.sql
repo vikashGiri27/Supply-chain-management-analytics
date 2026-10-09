@@ -145,6 +145,46 @@ w.Warehouse_Location
 ORDER BY Stockout_Count DESC;
 
 
+/*	---------------------------------------------------------
+BQ7: Compare product availability across warehouses.
+------------------------------------------------------------*/
+
+SELECT
+i.Product_ID,
+p.Product_Name,
+i.Warehouse_ID,
+w.Warehouse_Name,
+i.Inventory_Date,
+i.Closing_Stock,
+CASE
+WHEN i.Closing_Stock = 0 THEN 'Out of Stock'
+ELSE 'Stock Available'
+END AS Stock_Status
+FROM Fact_Inventory i
+INNER JOIN Dim_Product p
+ON i.Product_ID = p.Product_ID
+INNER JOIN Dim_Warehouse w
+ON i.Warehouse_ID = w.Warehouse_ID
+WHERE i.Inventory_Date = (
+SELECT MAX(Inventory_Date)
+FROM Fact_Inventory
+)
+AND EXISTS (
+SELECT 1
+FROM Fact_Inventory other
+WHERE other.Product_ID = i.Product_ID
+AND other.Inventory_Date = i.Inventory_Date
+AND other.Warehouse_ID <> i.Warehouse_ID
+AND (
+(i.Closing_Stock = 0 AND other.Closing_Stock > 0)
+OR
+(i.Closing_Stock > 0 AND other.Closing_Stock = 0)
+)
+)
+ORDER BY
+i.Product_ID,
+i.Closing_Stock DESC,
+i.Warehouse_ID;
 
 
 
