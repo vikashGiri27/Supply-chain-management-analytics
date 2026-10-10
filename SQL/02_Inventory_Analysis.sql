@@ -126,7 +126,7 @@ Inventory_Month;
 
 
 /*----------------------------------------------------------
-BQ5:Identify warehouses with the highest stockout frequency.
+BQ6:Identify warehouses with the highest stockout frequency.
 ----------------------------------------------------------*/
 
 SELECT
@@ -209,3 +209,8 @@ ORDER BY
 i.Product_ID,
 i.Warehouse_ID,
 i.Inventory_Date;
+
+/*-------------------------------------------------------
+BQ9: Which products appear overstocked?
+-------------------------------------------------------*/
+# Note: Requires an approved overstock threshold.
