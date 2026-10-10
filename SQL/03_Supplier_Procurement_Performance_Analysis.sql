@@ -19,3 +19,33 @@ AND p.Expected_Delivery_Date IS NOT NULL
 GROUP BY s.Supplier_ID,
 s.Supplier_Name
 ORDER BY On_Time_Delivery_Rate ASC;
+
+/*----------------------------------------------------------------------------------
+#BQ11. Which suppliers generate the highest number of delayed purchase orders?
+---------------------------------------------------------------------------------*/
+SELECT
+s.Supplier_ID,
+s.Supplier_Name,
+COUNT(DISTINCT p.PO_ID) AS Delayed_PO_Count
+FROM Dim_Supplier s
+INNER JOIN Fact_Purchase_Order p
+ON s.Supplier_ID = p.Supplier_ID
+WHERE REPLACE(REPLACE(p.PO_Status, CHAR(13), ''), CHAR(10), '') = 'Completed'
+AND p.Actual_Delivery_Date IS NOT NULL
+AND p.Expected_Delivery_Date IS NOT NULL
+AND p.Actual_Delivery_Date > p.Expected_Delivery_Date
+GROUP BY
+s.Supplier_ID,
+s.Supplier_Name
+ORDER BY
+Delayed_PO_Count DESC;
+
+
+
+
+
+
+
+
+
+
