@@ -69,4 +69,22 @@ group by p.Product_ID,p.Product_Name
 order by Average_Procurement_Lead_Time_Days desc;
 
 
-
+/*-------------------------------------------------------------------
+BQ14: Which suppliers frequently deliver less quantity than ordered?
+---------------------------------------------------------------------*/
+/*-------------------------------------------------------------------
+BQ14: Which suppliers frequently deliver less quantity than ordered?
+---------------------------------------------------------------------*/
+select
+s.Supplier_ID,
+s.Supplier_Name,
+count(*) as Short_Delivery_Count
+from Dim_Supplier s
+inner join Fact_Purchase_Order po
+on s.Supplier_ID = po.Supplier_ID
+where po.Received_Quantity < po.Ordered_Quantity
+and po.PO_Status = 'Completed'
+group by
+s.Supplier_ID,
+s.Supplier_Name
+order by Short_Delivery_Count desc;
