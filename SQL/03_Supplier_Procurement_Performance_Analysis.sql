@@ -72,9 +72,7 @@ order by Average_Procurement_Lead_Time_Days desc;
 /*-------------------------------------------------------------------
 BQ14: Which suppliers frequently deliver less quantity than ordered?
 ---------------------------------------------------------------------*/
-/*-------------------------------------------------------------------
-BQ14: Which suppliers frequently deliver less quantity than ordered?
----------------------------------------------------------------------*/
+
 select
 s.Supplier_ID,
 s.Supplier_Name,
@@ -88,3 +86,17 @@ group by
 s.Supplier_ID,
 s.Supplier_Name
 order by Short_Delivery_Count desc;
+
+/*-------------------------------------------------------------------
+BQ15. What is the purchase order fulfillment rate by supplier?
+---------------------------------------------------------------------*/
+select
+Supplier_ID,
+round(sum(Received_Quantity) / nullif(sum(Ordered_Quantity), 0) * 100, 2) as Fulfillment_Rate
+from Fact_Purchase_Order
+where PO_Status = 'Completed'
+and Ordered_Quantity is not null
+and Received_Quantity is not null
+group by
+Supplier_ID
+order by Fulfillment_Rate desc;
