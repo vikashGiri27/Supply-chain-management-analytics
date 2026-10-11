@@ -2,58 +2,71 @@
                  SUPPLIER & PROCUREMENT PERFORMANCE ANALYSIS
 ==================================================================*/
 
-/*----------------------------------------------------------------
+/*-----------------------------------------------------------
 BQ10. Which suppliers have the lowest on-time delivery performance?
-------------------------------------------------------------------*/
-SELECT s.Supplier_ID,
+-------------------------------------------------------------*/
+select
+s.Supplier_ID,
 s.Supplier_Name,
-COUNT(*) AS Total_Orders,
-SUM(CASE WHEN p.Actual_Delivery_Date <= p.Expected_Delivery_Date THEN 1 ELSE 0 END) AS On_Time_Orders,
-ROUND(SUM(CASE WHEN p.Actual_Delivery_Date <= p.Expected_Delivery_Date THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS On_Time_Delivery_Rate
-FROM Fact_Purchase_Order p
-INNER JOIN Dim_Supplier s
-ON p.Supplier_ID = s.Supplier_ID
-WHERE REPLACE(REPLACE(p.PO_Status, CHAR(13), ''), CHAR(10), '') = 'Completed'
-AND p.Actual_Delivery_Date IS NOT NULL
-AND p.Expected_Delivery_Date IS NOT NULL
-GROUP BY s.Supplier_ID,
+count(*) as Total_Orders,
+sum(case when p.Actual_Delivery_Date <= p.Expected_Delivery_Date then 1 else 0 end) as On_Time_Orders,
+round(sum(case when p.Actual_Delivery_Date <= p.Expected_Delivery_Date then 1 else 0 end) * 100.0 / count(*), 2) as On_Time_Delivery_Rate
+from Fact_Purchase_Order p
+inner join Dim_Supplier s
+on p.Supplier_ID = s.Supplier_ID
+where p.PO_Status= 'Completed'
+and p.Actual_Delivery_Date is not null
+and p.Expected_Delivery_Date is not null
+group by s.Supplier_ID,
 s.Supplier_Name
-ORDER BY On_Time_Delivery_Rate ASC;
+order by On_Time_Delivery_Rate asc;
 
 /*----------------------------------------------------------------------------------
 #BQ11. Which suppliers generate the highest number of delayed purchase orders?
 ---------------------------------------------------------------------------------*/
-SELECT
+Select
 s.Supplier_ID,
 s.Supplier_Name,
-COUNT(DISTINCT p.PO_ID) AS Delayed_PO_Count
-FROM Dim_Supplier s
-INNER JOIN Fact_Purchase_Order p
-ON s.Supplier_ID = p.Supplier_ID
-WHERE REPLACE(REPLACE(p.PO_Status, CHAR(13), ''), CHAR(10), '') = 'Completed'
-AND p.Actual_Delivery_Date IS NOT NULL
-AND p.Expected_Delivery_Date IS NOT NULL
-AND p.Actual_Delivery_Date > p.Expected_Delivery_Date
-GROUP BY
-s.Supplier_ID,
-s.Supplier_Name
-ORDER BY
-Delayed_PO_Count DESC;
+count(distinct p.PO_ID) as Delayed_PO_Count
+from Dim_Supplier s
+inner join Fact_Purchase_Order p
+on s.Supplier_ID = p.Supplier_ID
+where p.PO_Status= 'Completed'
+and p.actual_Delivery_Date is not null
+and p.Expected_Delivery_Date is not null
+and p.Actual_delivery_Date > p.Expected_Delivery_Date
+group by s.Supplier_ID,s.Supplier_Name
+order by Delayed_PO_Count desc;
 
 /*-----------------------------------------------------
 BQ12. What is the average procurement lead time?
 ------------------------------------------------------*/
-SELECT
-ROUND(
-AVG(DATEDIFF(Actual_Delivery_Date, Order_Date)),2)
+Select
+round(avg(datediff(Actual_Delivery_Date, Order_Date)),2)
 AS Average_Procurement_Lead_Time_Days
-FROM Fact_Purchase_Order
-WHERE PO_Status = 'Completed'
-AND Actual_Delivery_Date IS NOT NULL
-AND Order_Date IS NOT NULL
-AND Actual_Delivery_Date >= Order_Date;
+from Fact_Purchase_Order
+where PO_Status = 'Completed'
+and Actual_Delivery_Date is not null
+and Order_Date in not null
+and Actual_Delivery_Date >= Order_Date;
 
+/*-----------------------------------------------------------
+BQ13. Which products have the longest procurement lead time?
+-------------------------------------------------------------*/
 
+select
+p.Product_ID,
+p.Product_Name,
+round(avg(datediff(po.Actual_Delivery_Date, po.Order_Date)), 2) as Average_Procurement_Lead_Time_Days
+from Dim_Product as p
+inner join Fact_Purchase_Order as po
+on p.Product_ID = po.Product_ID
+where po.PO_Status = 'Completed'
+and po.Order_Date is not null
+and po.Actual_Delivery_Date is not null
+and po.Actual_Delivery_Date >= po.Order_Date
+group by p.Product_ID,p.Product_Name
+order by Average_Procurement_Lead_Time_Days desc;
 
 
 
