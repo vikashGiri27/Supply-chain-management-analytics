@@ -520,3 +520,9 @@ ADD CONSTRAINT Fk_return_date
 FOREIGN KEY (Return_Date)
 REFERENCES Dim_Date(Date);
 
+SELECT
+    PO_Status,
+    HEX(PO_Status) AS Status_Hex,
+    COUNT(*) AS Row_Count
+FROM Fact_Purchase_Order
+GROUP BY PO_Status, HEX(PO_Status);

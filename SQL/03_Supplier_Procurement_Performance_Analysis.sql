@@ -40,10 +40,18 @@ s.Supplier_Name
 ORDER BY
 Delayed_PO_Count DESC;
 
-
-
-
-
+/*-----------------------------------------------------
+BQ12. What is the average procurement lead time?
+------------------------------------------------------*/
+SELECT
+ROUND(
+AVG(DATEDIFF(Actual_Delivery_Date, Order_Date)),2)
+AS Average_Procurement_Lead_Time_Days
+FROM Fact_Purchase_Order
+WHERE PO_Status = 'Completed'
+AND Actual_Delivery_Date IS NOT NULL
+AND Order_Date IS NOT NULL
+AND Actual_Delivery_Date >= Order_Date;
 
 
 
