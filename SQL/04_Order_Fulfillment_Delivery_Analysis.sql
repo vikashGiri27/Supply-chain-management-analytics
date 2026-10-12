@@ -2,9 +2,9 @@
     ORDER FULFILLMENT & DELIVERY PERFORMANCE ANALYSIS
 =======================================================*/
 
-/*------------------------------------------------------
-What percentage of customer orders are fully fulfilled?
-------------------------------------------------------*/
+/*-----------------------------------------------------------
+BQ01: What percentage of customer orders are fully fulfilled?
+------------------------------------------------------------*/
 select
 count(distinct Order_ID) as total_orders,
 count(*) as total_order_lines,
@@ -15,3 +15,19 @@ round(sum(Fulfilled_Quantity) / nullif(sum(Ordered_Quantity), 0) * 100,
 sum(Ordered_Quantity is null) as missing_ordered_quantity_lines,
 sum(Fulfilled_Quantity is null) as missing_fulfilled_quantity_lines
 from Fact_Customer_Order;
+
+/*-----------------------------------------------------------
+BQ02: What percentage of completed deliveries are on time?
+------------------------------------------------------------*/
+/*-----------------------------------------------------------
+BQ02: What percentage of completed deliveries are on time?
+-----------------------------------------------------------*/
+select
+count(*) as total_completed_deliveries,
+sum(case when Actual_Delivery_Date <= Expected_Delivery_Date then 1 else 0 end) as on_time_deliveries,
+round( sum(case when Actual_Delivery_Date <= Expected_Delivery_Date then 1 else 0 end) / nullif(count(*), 0) * 100,
+2 ) as on_time_delivery_rate_pct
+from Fact_Delivery
+where Delivery_Status = 'Delivered'
+and Expected_Delivery_Date is not null
+and Actual_Delivery_Date is not null;
