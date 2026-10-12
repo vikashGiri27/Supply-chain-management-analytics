@@ -100,3 +100,28 @@ and Received_Quantity is not null
 group by
 Supplier_ID
 order by Fulfillment_Rate desc;
+
+/*-----------------------------------------------------
+BQ16. How has supplier performance changed over time?
+------------------------------------------------------*/
+select
+Supplier_ID,
+year(Order_Date) as Order_Year,
+month(Order_Date) as Order_Month,
+count(*) as Total_Deliveries,
+sum(case when Actual_Delivery_Date <= Expected_Delivery_Date then 1 else 0 end) as On_Time_Delivery_Count,
+sum(case when Actual_Delivery_Date > Expected_Delivery_Date then 1 else 0 end) as Late_Delivery_Count,
+round(sum(case when Actual_Delivery_Date <= Expected_Delivery_Date then 1 else 0 end) * 100.0 / count(*), 2) as On_Time_Delivery_Rate,
+round(sum(case when Actual_Delivery_Date > Expected_Delivery_Date then 1 else 0 end) * 100.0 / count(*), 2) as Late_Delivery_Rate
+from Fact_Purchase_Order
+where PO_Status = 'Completed'
+and Order_Date is not null
+and Actual_Delivery_Date is not null
+and Expected_Delivery_Date is not null
+group by Supplier_ID,
+year(Order_Date),
+month(Order_Date)
+order by
+Order_Year,
+Order_Month,
+Supplier_ID;
