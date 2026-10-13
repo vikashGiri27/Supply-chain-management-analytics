@@ -16,12 +16,11 @@ sum(Ordered_Quantity is null) as missing_ordered_quantity_lines,
 sum(Fulfilled_Quantity is null) as missing_fulfilled_quantity_lines
 from Fact_Customer_Order;
 
+
 /*-----------------------------------------------------------
 BQ02: What percentage of completed deliveries are on time?
 ------------------------------------------------------------*/
-/*-----------------------------------------------------------
-BQ02: What percentage of completed deliveries are on time?
------------------------------------------------------------*/
+
 select
 count(*) as total_completed_deliveries,
 sum(case when Actual_Delivery_Date <= Expected_Delivery_Date then 1 else 0 end) as on_time_deliveries,
@@ -31,3 +30,39 @@ from Fact_Delivery
 where Delivery_Status = 'Delivered'
 and Expected_Delivery_Date is not null
 and Actual_Delivery_Date is not null;
+
+
+/*-----------------------------------------------------------
+BQ03: Which warehouses have the highest fulfillment issues?
+-----------------------------------------------------------*/
+
+select
+Warehouse_ID,
+count(distinct Order_ID) as total_orders,
+count(*) as total_order_lines,
+sum(Ordered_Quantity) as total_ordered_quantity,
+sum(Fulfilled_Quantity) as total_fulfilled_quantity,
+round(sum(Fulfilled_Quantity) / nullif(sum(Ordered_Quantity), 0) * 100,2) as order_fulfillment_rate_pct,
+sum(case when Ordered_Quantity > Fulfilled_Quantity then 1 else 0 end) as shortfall_order_lines,
+sum(case when Ordered_Quantity > Fulfilled_Quantity then Ordered_Quantity - Fulfilled_Quantity
+else 0 end) as fulfillment_shortfall_quantity,
+sum(Ordered_Quantity is null) as missing_ordered_quantity_lines,
+sum(Fulfilled_Quantity is null) as missing_fulfilled_quantity_lines
+from Fact_Customer_Order
+group by Warehouse_ID
+order by fulfillment_shortfall_quantity desc;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
