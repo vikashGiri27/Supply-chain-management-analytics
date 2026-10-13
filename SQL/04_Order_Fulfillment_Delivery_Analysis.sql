@@ -53,7 +53,22 @@ group by Warehouse_ID
 order by fulfillment_shortfall_quantity desc;
 
 
-
+/*-----------------------------------------------------------
+BQ04: Which regions have the highest delivery delays?*
+------------------------------------------------------------*/
+select
+Delivery_Region,
+count(*) as Total_Completed_Deliveries,
+sum(case when Actual_Delivery_Date > Expected_Delivery_Date then 1 else 0 end) as Late_Deliveries,
+round(sum(case when Actual_Delivery_Date > Expected_Delivery_Date then 1 else 0 end) / nullif(count(*), 0) * 100,2) as Late_Delivery_Rate_Pct,
+round( avg(case when Actual_Delivery_Date > Expected_Delivery_Date
+then datediff(Actual_Delivery_Date, Expected_Delivery_Date)else null end),2 ) as Average_Delivery_Delay_Days
+from Fact_Delivery
+where Delivery_Status = 'Delivered'
+and Expected_Delivery_Date is not null
+and Actual_Delivery_Date is not null
+group by Delivery_Region
+order by Late_Delivery_Rate_Pct desc;
 
 
 
