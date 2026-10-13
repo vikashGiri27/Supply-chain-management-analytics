@@ -71,13 +71,23 @@ group by Delivery_Region
 order by Late_Delivery_Rate_Pct desc;
 
 
-
-
-
-
-
-
-
+/*---------------------------------------------------------------
+BQ05: Which products experience recurring fulfillment shortages?
+----------------------------------------------------------------*/
+select
+Product_ID,
+sum(Ordered_Quantity) as Total_Ordered_Quantity,
+sum(Fulfilled_Quantity) as Total_Fulfilled_Quantity,
+Round(sum(fulfilled_Quantity)*100.0/nullif(sum(Ordered_Quantity),0),2) as Product_Fulfillment_Rate,
+sum(case When Ordered_Quantity>Fulfilled_Quantity then 1 else 0 end) as Shortage_Order_Lines,
+sum(case when Ordered_Quantity=Fulfilled_Quantity then 1 else 0 end) as Fully_Filled_orders_line,
+sum(case When Fulfilled_Quantity>Ordered_Quantity then 1 else 0 end) as over_fulfilled_orders_line,
+sum(case when Ordered_Quantity>Fulfilled_Quantity then Ordered_Quantity-Fulfilled_Quantity else 0 end) as Total_Shortage_Quantity 
+from fact_customer_order
+where Ordered_Quantity is not null
+and Fulfilled_Quantity is not null 
+group by Product_ID
+order by Shortage_Order_Lines desc,Total_Shortage_Quantity desc;
 
 
 
