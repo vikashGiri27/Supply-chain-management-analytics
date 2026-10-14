@@ -89,5 +89,47 @@ and Fulfilled_Quantity is not null
 group by Product_ID
 order by Shortage_Order_Lines desc,Total_Shortage_Quantity desc;
 
+/*-------------------------------------------------------
+BQ06 — What is the average order-to-delivery cycle time?
+--------------------------------------------------------*/
+with Order_Level as
+( select
+fo.Order_ID,
+min(fo.Order_Date) as Order_Date,
+max(fd.Actual_Delivery_Date) as Actual_Delivery_Date
+from Fact_Customer_Order as fo
+inner join Fact_Delivery as fd
+on fo.Order_ID = fd.Order_ID
+where fo.Order_Date is not null
+and fd.Actual_Delivery_Date is not null
+group by fo.Order_ID),
+Order_Cycle_Time as
+(select Order_ID,
+Order_Date,
+Actual_Delivery_Date,
+datediff(Actual_Delivery_Date, Order_Date) as Order_to_Delivery_Days
+from Order_Level)
+select
+count(*) as Total_Orders_Analyzed,
+round(avg(Order_to_Delivery_Days), 2) as Average_Order_to_Delivery_Days,
+min(Order_to_Delivery_Days) as Minimum_Cycle_Time_Days,
+max(Order_to_Delivery_Days) as Maximum_Cycle_Time_Days
+from Order_Cycle_Time
+where Order_to_Delivery_Days >= 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
