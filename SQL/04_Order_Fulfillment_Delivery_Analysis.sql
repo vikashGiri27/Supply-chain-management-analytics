@@ -156,6 +156,35 @@ order by
 Delivery_Year,
 Delivery_Month;
 
+/*------------------------------------------------------------------------------------
+BQ08. Are inventory shortages associated with incomplete customer order fulfillment?
+-------------------------------------------------------------------------------------*/
+
+select
+i.Product_ID,
+i.Warehouse_ID,
+count(*) as Stockout_Order_Matches,
+sum(o.Ordered_Quantity) as Total_Ordered_Quantity,
+sum(o.Fulfilled_Quantity) as Total_Fulfilled_Quantity,
+sum(o.Ordered_Quantity - o.Fulfilled_Quantity)
+as Unfulfilled_Quantity
+from Fact_Inventory as i
+join Fact_Customer_Order as o
+on i.Product_ID = o.Product_ID
+and i.Warehouse_ID = o.Warehouse_ID
+and i.Inventory_Date = o.Order_Date
+where i.Closing_Stock = 0
+and o.Order_Status <> 'Cancelled'
+group by
+i.Product_ID,
+i.Warehouse_ID
+having sum(o.Ordered_Quantity - o.Fulfilled_Quantity) > 0
+order by Unfulfilled_Quantity desc;
+
+
+
+
+
 
 
 
