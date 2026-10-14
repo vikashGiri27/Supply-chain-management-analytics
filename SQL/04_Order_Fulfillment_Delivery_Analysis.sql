@@ -104,7 +104,7 @@ where fo.Order_Date is not null
 and fd.Actual_Delivery_Date is not null
 group by fo.Order_ID),
 Order_Cycle_Time as
-(select Order_ID,
+(select 	Order_ID,
 Order_Date,
 Actual_Delivery_Date,
 datediff(Actual_Delivery_Date, Order_Date) as Order_to_Delivery_Days
@@ -118,9 +118,43 @@ from Order_Cycle_Time
 where Order_to_Delivery_Days >= 0;
 
 
-
-
-
+/*-----------------------------------------------------
+BQ07 — How does delivery performance change over time?
+------------------------------------------------------*/
+with Distinct_Deliveries as
+( select distinct
+Delivery_ID,
+Order_ID,
+Shipment_Date,
+Expected_Delivery_Date,
+Actual_Delivery_Date,
+Delivery_Status,
+Delivery_Region
+from Fact_Delivery ),
+Monthly_Delivery_Performance as
+(select
+year(Actual_Delivery_Date) as Delivery_Year,
+month(Actual_Delivery_Date) as Delivery_Month,
+count(*) as Total_Eligible_Deliveries,
+sum(case when Actual_Delivery_Date <= Expected_Delivery_Date then 1 else 0 end) as On_Time_Deliveries,
+sum(case when Actual_Delivery_Date > Expected_Delivery_Date then 1 else 0 end) as Late_Deliveries
+from Distinct_Deliveries
+where Delivery_Status = 'Delivered'
+and Actual_Delivery_Date is not null
+and Expected_Delivery_Date is not null
+group by year(Actual_Delivery_Date),
+month(Actual_Delivery_Date))
+select Delivery_Year,
+Delivery_Month,
+Total_Eligible_Deliveries,
+On_Time_Deliveries,
+Late_Deliveries,
+round(On_Time_Deliveries * 100.0 / nullif(Total_Eligible_Deliveries, 0),2) as On_Time_Delivery_Rate,
+round(Late_Deliveries * 100.0 / nullif(Total_Eligible_Deliveries, 0),2) as Late_Delivery_Rate
+from Monthly_Delivery_Performance
+order by
+Delivery_Year,
+Delivery_Month;
 
 
 
