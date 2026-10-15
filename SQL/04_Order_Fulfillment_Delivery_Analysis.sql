@@ -181,13 +181,36 @@ i.Warehouse_ID
 having sum(o.Ordered_Quantity - o.Fulfilled_Quantity) > 0
 order by Unfulfilled_Quantity desc;
 
-
-
-
-
-
-
-
+/*-------------------------------------------------------------------------
+BQ09: Are supplier delays associated with downstream delivery performance?
+--------------------------------------------------------------------------*/
+with s as (
+select date_format(Expected_Delivery_Date,'%Y-%m') as Performance_Month,
+count(*) as Completed_PO_Line_Count,
+sum(Actual_Delivery_Date > Expected_Delivery_Date) as Late_PO_Count
+from Fact_Purchase_Order
+where PO_Status = 'Completed'
+and Actual_Delivery_Date is not null
+and Expected_Delivery_Date is not null
+group by Performance_Month), d 
+as (select date_format(Expected_Delivery_Date,'%Y-%m') as Performance_Month,
+count(*) as Completed_Delivery_Count,
+sum(Actual_Delivery_Date > Expected_Delivery_Date) as Late_Delivery_Count
+from Fact_Delivery
+where Delivery_Status = 'Delivered'
+and Actual_Delivery_Date is not null
+and Expected_Delivery_Date is not null
+group by Performance_Month
+)
+select s.Performance_Month,
+s.Completed_PO_Line_Count,
+s.Late_PO_Count,
+round(100.0 * s.Late_PO_Count / nullif(s.Completed_PO_Line_Count,0),2) as Late_PO_Rate_Percent,
+d.Completed_Delivery_Count,
+d.Late_Delivery_Count,
+round(100.0 * d.Late_Delivery_Count / nullif(d.Completed_Delivery_Count,0),2) as Late_Delivery_Rate_Percent
+from s join d using (Performance_Month)
+order by s.Performance_Month;
 
 
 
