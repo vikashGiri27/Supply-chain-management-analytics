@@ -213,9 +213,33 @@ from s join d using (Performance_Month)
 order by s.Performance_Month;
 
 
+/*-------------------------------------------------------------------------
+BQ10:Which operational segments should be prioritized for improvement?
+--------------------------------------------------------------------------*/
 
-
-
+with segments as (
+select 'warehouse' as segment_type, Warehouse_ID as segment_name,
+round(100.0 * sum(case when Fulfilled_Quantity < Ordered_Quantity then 1 else 0 end) / count(*), 2) as issue_rate
+from Fact_Customer_Order
+where Ordered_Quantity is not null and Fulfilled_Quantity is not null
+group by Warehouse_ID
+union all
+select 'product', Product_ID,
+round(100.0 * sum(case when Fulfilled_Quantity < Ordered_Quantity then 1 else 0 end) / count(*), 2)
+from Fact_Customer_Order
+where Ordered_Quantity is not null and Fulfilled_Quantity is not null
+group by Product_ID
+union all
+select 'region', Delivery_Region,
+round(100.0 * sum(case when Actual_Delivery_Date > Expected_Delivery_Date then 1 else 0 end) / count(*), 2)
+from Fact_Delivery
+where Delivery_Status = 'Delivered'
+and Actual_Delivery_Date is not null
+and Expected_Delivery_Date is not null
+group by Delivery_Region)
+select segment_type, segment_name, issue_rate
+from segments
+order by issue_rate desc;
 
 
 
