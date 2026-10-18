@@ -37,9 +37,9 @@ select max(Inventory_Date)
 from Fact_Inventory)
 order by Inventory_Quantity desc;
 
-/*---------------------------------------------------------------------
+/*-----------------------------------------
  BQ3. How does inventory change over time?
------------------------------------------------------------------------*/
+-------------------------------------------*/
 
 With inventory_movement_base as
 (select
@@ -74,7 +74,8 @@ inner join Dim_Warehouse w
 on i.Warehouse_ID = w.Warehouse_ID
 where i.Inventory_Date = (
 select max(Inventory_Date)
-from Fact_Inventory )
+from Fact_Inventory 
+)
 group by
 w.Warehouse_ID,
 w.Warehouse_Name,
@@ -137,10 +138,9 @@ w.Warehouse_Location
 order by Stockout_Count desc;
 
 
-/*	---------------------------------------------------------
+/*------------------------------------------------------
 BQ7: Compare product availability across warehouses.
-------------------------------------------------------------*/
-
+--------------------------------------------------------*/
 select
 i.Product_ID,
 p.Product_Name,
@@ -193,4 +193,3 @@ order by
 i.Product_ID,
 i.Warehouse_ID,
 i.Inventory_Date;
-

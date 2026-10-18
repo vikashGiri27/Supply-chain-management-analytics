@@ -54,7 +54,7 @@ order by fulfillment_shortfall_quantity desc;
 
 
 /*-----------------------------------------------------------
-BQ04: Which regions have the highest delivery delays?*
+BQ04: Which regions have the highest delivery delays?
 ------------------------------------------------------------*/
 select
 Delivery_Region,
