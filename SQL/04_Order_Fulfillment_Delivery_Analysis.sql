@@ -5,16 +5,16 @@
 /*-----------------------------------------------------------
 BQ01: What percentage of customer orders are fully fulfilled?
 ------------------------------------------------------------*/
-select
-count(distinct Order_ID) as total_orders,
-count(*) as total_order_lines,
-sum(Ordered_Quantity) as total_ordered_quantity,
-sum(Fulfilled_Quantity) as total_fulfilled_quantity,
-round(sum(Fulfilled_Quantity) / nullif(sum(Ordered_Quantity), 0) * 100,
-2 ) as order_fulfillment_rate_pct,
-sum(Ordered_Quantity is null) as missing_ordered_quantity_lines,
-sum(Fulfilled_Quantity is null) as missing_fulfilled_quantity_lines
-from Fact_Customer_Order;
+with orders as (
+select Order_ID,
+sum(Ordered_Quantity is null or Fulfilled_Quantity is null) as missing_lines,
+sum(Fulfilled_Quantity < Ordered_Quantity) as short_lines
+from Fact_Customer_Order
+group by Order_ID)
+select count(*) as Total_Orders,
+sum(missing_lines = 0 and short_lines = 0) as Fully_Fulfilled_Orders,
+round(100.0 * sum(missing_lines = 0 and short_lines = 0) / nullif(count(*), 0), 2) as Fully_Fulfilled_Order_Rate
+from orders;
 
 
 /*-----------------------------------------------------------
@@ -121,64 +121,43 @@ where Order_to_Delivery_Days >= 0;
 /*-----------------------------------------------------
 BQ07 — How does delivery performance change over time?
 ------------------------------------------------------*/
-with Distinct_Deliveries as
-( select distinct
-Delivery_ID,
-Order_ID,
-Shipment_Date,
-Expected_Delivery_Date,
-Actual_Delivery_Date,
-Delivery_Status,
-Delivery_Region
-from Fact_Delivery ),
-Monthly_Delivery_Performance as
-(select
-year(Actual_Delivery_Date) as Delivery_Year,
+with deliveries as (
+select distinct Delivery_ID, Order_ID, Shipment_Date,
+Expected_Delivery_Date, Actual_Delivery_Date, Delivery_Status, Delivery_Region
+from Fact_Delivery)
+select year(Actual_Delivery_Date) as Delivery_Year,
 month(Actual_Delivery_Date) as Delivery_Month,
-count(*) as Total_Eligible_Deliveries,
-sum(case when Actual_Delivery_Date <= Expected_Delivery_Date then 1 else 0 end) as On_Time_Deliveries,
-sum(case when Actual_Delivery_Date > Expected_Delivery_Date then 1 else 0 end) as Late_Deliveries
-from Distinct_Deliveries
+count(*) as Total_Deliveries,
+sum(Actual_Delivery_Date <= Expected_Delivery_Date) as On_Time_Deliveries,
+sum(Actual_Delivery_Date > Expected_Delivery_Date) as Late_Deliveries,
+round(100.0 * avg(Actual_Delivery_Date <= Expected_Delivery_Date), 2) as On_Time_Rate,
+round(100.0 * avg(Actual_Delivery_Date > Expected_Delivery_Date), 2) as Late_Rate
+from deliveries
 where Delivery_Status = 'Delivered'
 and Actual_Delivery_Date is not null
 and Expected_Delivery_Date is not null
-group by year(Actual_Delivery_Date),
-month(Actual_Delivery_Date))
-select Delivery_Year,
-Delivery_Month,
-Total_Eligible_Deliveries,
-On_Time_Deliveries,
-Late_Deliveries,
-round(On_Time_Deliveries * 100.0 / nullif(Total_Eligible_Deliveries, 0),2) as On_Time_Delivery_Rate,
-round(Late_Deliveries * 100.0 / nullif(Total_Eligible_Deliveries, 0),2) as Late_Delivery_Rate
-from Monthly_Delivery_Performance
-order by
-Delivery_Year,
-Delivery_Month;
+group by Delivery_Year, Delivery_Month
+order by Delivery_Year, Delivery_Month;
 
 /*------------------------------------------------------------------------------------
 BQ08. Are inventory shortages associated with incomplete customer order fulfillment?
 -------------------------------------------------------------------------------------*/
 
-select
-i.Product_ID,
-i.Warehouse_ID,
-count(*) as Stockout_Order_Matches,
-sum(o.Ordered_Quantity) as Total_Ordered_Quantity,
-sum(o.Fulfilled_Quantity) as Total_Fulfilled_Quantity,
-sum(o.Ordered_Quantity - o.Fulfilled_Quantity)
-as Unfulfilled_Quantity
-from Fact_Inventory as i
-join Fact_Customer_Order as o
+with stockouts as (
+select distinct Product_ID, Warehouse_ID, Inventory_Date
+from Fact_Inventory
+where Closing_Stock = 0)
+select o.Product_ID, o.Warehouse_ID,
+count(*) as Affected_Order_Lines,
+sum(o.Ordered_Quantity - o.Fulfilled_Quantity) as Unfulfilled_Quantity
+from stockouts i
+join Fact_Customer_Order o
 on i.Product_ID = o.Product_ID
 and i.Warehouse_ID = o.Warehouse_ID
 and i.Inventory_Date = o.Order_Date
-where i.Closing_Stock = 0
-and o.Order_Status <> 'Cancelled'
-group by
-i.Product_ID,
-i.Warehouse_ID
-having sum(o.Ordered_Quantity - o.Fulfilled_Quantity) > 0
+where o.Order_Status <> 'Cancelled'
+and o.Ordered_Quantity > o.Fulfilled_Quantity
+group by o.Product_ID, o.Warehouse_ID
 order by Unfulfilled_Quantity desc;
 
 /*-------------------------------------------------------------------------
@@ -219,32 +198,27 @@ BQ10:Which operational segments should be prioritized for improvement?
 
 select 'warehouse' as segment_type, Warehouse_ID as segment_name,
 count(*) as total_cases,
-sum(case when Fulfilled_Quantity < Ordered_Quantity then 1 else 0 end) as issue_cases,
-sum(Ordered_Quantity - Fulfilled_Quantity) as issue_qty,
-round(100.0 * sum(Ordered_Quantity - Fulfilled_Quantity) / nullif(sum(Ordered_Quantity), 0), 2) as issue_pct
+sum(Fulfilled_Quantity < Ordered_Quantity) as issue_cases,
+sum(greatest(Ordered_Quantity - Fulfilled_Quantity, 0)) as issue_qty,
+round(100.0 * sum(greatest(Ordered_Quantity - Fulfilled_Quantity, 0)) / nullif(sum(Ordered_Quantity), 0), 2) as issue_pct
 from Fact_Customer_Order
 where Ordered_Quantity is not null and Fulfilled_Quantity is not null
 group by Warehouse_ID
 union all
 select 'product', Product_ID, count(*),
-sum(case when Fulfilled_Quantity < Ordered_Quantity then 1 else 0 end),
-sum(Ordered_Quantity - Fulfilled_Quantity),
-round(100.0 * sum(Ordered_Quantity - Fulfilled_Quantity) / nullif(sum(Ordered_Quantity), 0), 2)
+sum(Fulfilled_Quantity < Ordered_Quantity),
+sum(greatest(Ordered_Quantity - Fulfilled_Quantity, 0)),
+round(100.0 * sum(greatest(Ordered_Quantity - Fulfilled_Quantity, 0)) / nullif(sum(Ordered_Quantity), 0), 2)
 from Fact_Customer_Order
 where Ordered_Quantity is not null and Fulfilled_Quantity is not null
 group by Product_ID
 union all
 select 'region', Delivery_Region, count(*),
-sum(case when Actual_Delivery_Date > Expected_Delivery_Date then 1 else 0 end),
-null,round(100.0 * sum(case when Actual_Delivery_Date > Expected_Delivery_Date then 1 else 0 end) / count(*), 2)
+sum(Actual_Delivery_Date > Expected_Delivery_Date),null,
+round(100.0 * avg(Actual_Delivery_Date > Expected_Delivery_Date), 2)
 from Fact_Delivery
 where Delivery_Status = 'Delivered'
 and Actual_Delivery_Date is not null
 and Expected_Delivery_Date is not null
 group by Delivery_Region
 order by segment_type, issue_pct desc;
-
-
-
-
-

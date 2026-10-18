@@ -5,121 +5,113 @@
 /*----------------------------------------------------------------
 BQ1. Which products experience the highest number of stockouts?
 ------------------------------------------------------------------*/
-SELECT i.Product_ID,
+Select i.Product_ID,
 p.Product_Name,
 p.Product_Category,
-COUNT(*) AS Stockout_Count
-FROM Fact_Inventory i
-INNER JOIN Dim_Product p
-ON i.Product_ID = p.Product_ID
-WHERE i.Closing_Stock = 0
-GROUP BY i.Product_ID,
+COUNT(*) as Stockout_Count
+From Fact_Inventory i
+Inner Join Dim_Product p
+on i.Product_ID = p.Product_ID
+Where i.Closing_Stock = 0
+Group by i.Product_ID,
 p.Product_Name,
 p.Product_Category
-ORDER BY Stockout_Count DESC;
+order by Stockout_Count desc;
 
 /*---------------------------------------------------------------------
 BQ2. Which products and warehouses hold the highest inventory quantity?
 -----------------------------------------------------------------------*/
-SELECT
-    i.Product_ID,
-    p.Product_Name,
-    w.Warehouse_ID,
-    w.Warehouse_Name,
-    SUM(i.Closing_Stock) AS Total_Inventory
-FROM Fact_Inventory i
-INNER JOIN Dim_Product p
-    ON i.Product_ID = p.Product_ID
-INNER JOIN Dim_Warehouse w
-    ON i.Warehouse_ID = w.Warehouse_ID
-GROUP BY
-    i.Product_ID,
-    p.Product_Name,
-    w.Warehouse_ID,
-    w.Warehouse_Name
-ORDER BY Total_Inventory DESC;
+select
+i.Product_ID,
+p.Product_Name,
+i.Warehouse_ID,
+w.Warehouse_Name,
+i.Closing_Stock as Inventory_Quantity
+from Fact_Inventory i
+left join Dim_Product p
+on i.Product_ID = p.Product_ID
+inner join Dim_Warehouse w
+on i.Warehouse_ID = w.Warehouse_ID
+where i.Inventory_Date = (
+select max(Inventory_Date)
+from Fact_Inventory)
+order by Inventory_Quantity desc;
 
 /*---------------------------------------------------------------------
  BQ3. How does inventory change over time?
 -----------------------------------------------------------------------*/
-WITH Inventory_Movement_Base AS
-(
-SELECT
+
+With inventory_movement_base as
+(select
 Product_ID,
 Warehouse_ID,
 Inventory_Date,
 Closing_Stock,
-LAG(Closing_Stock) OVER (
-PARTITION BY Product_ID, Warehouse_ID
-ORDER BY Inventory_Date
-) AS Previous_Closing_Stock
-FROM Fact_Inventory)
-SELECT
+lag(Closing_Stock) over (
+partition by Product_ID, Warehouse_ID
+order by Inventory_Date ) as Previous_Closing_Stock From Fact_Inventory)
+Select
 Product_ID,
 Warehouse_ID,
 Inventory_Date,
 Closing_Stock,
 Previous_Closing_Stock,
-Closing_Stock - Previous_Closing_Stock AS Inventory_Change
-FROM Inventory_Movement_Base
-ORDER BY Product_ID, Warehouse_ID, Inventory_Date;
+Closing_Stock - Previous_Closing_Stock as Inventory_Change
+from Inventory_Movement_Base
+order by Product_ID, Warehouse_ID, Inventory_Date;
 
 /*----------------------------------------------------
 BQ4. How does inventory vary across warehouses?
 ------------------------------------------------------*/
 
-SELECT
+select
 w.Warehouse_ID,
 w.Warehouse_Name,
 w.Warehouse_Location,
-SUM(i.Closing_Stock) AS Warehouse_Inventory_Quantity
-FROM Fact_Inventory i
-INNER JOIN Dim_Warehouse w
-ON i.Warehouse_ID = w.Warehouse_ID
-GROUP BY
+sum(i.Closing_Stock) as Warehouse_Inventory_Quantity
+from Fact_Inventory i
+inner join Dim_Warehouse w
+on i.Warehouse_ID = w.Warehouse_ID
+where i.Inventory_Date = (
+select max(Inventory_Date)
+from Fact_Inventory )
+group by
 w.Warehouse_ID,
 w.Warehouse_Name,
 w.Warehouse_Location
-ORDER BY
-Warehouse_Inventory_Quantity DESC;
+order by Warehouse_Inventory_Quantity desc;
 
 /*--------------------------------------------------------------------------------
 BQ5: Analyze monthly inventory movement and stock held by product and warehouse.
 ----------------------------------------------------------------------------------*/
 
-WITH Monthly_Inventory AS (
-SELECT
+With Monthly_Inventory as (
+select
 Product_ID,
 Warehouse_ID,
 Inventory_Date,
 Opening_Stock,
 Issued_or_Sold_Quantity,
 Closing_Stock,
-DATE_FORMAT(Inventory_Date, '%Y-%m') AS Inventory_Month,
-ROW_NUMBER() OVER (
-PARTITION BY Product_ID, Warehouse_ID, DATE_FORMAT(Inventory_Date, '%Y-%m')
-ORDER BY Inventory_Date
-) AS First_Row,
-ROW_NUMBER() OVER (
-PARTITION BY Product_ID, Warehouse_ID, DATE_FORMAT(Inventory_Date, '%Y-%m')
-ORDER BY Inventory_Date DESC
-) AS Last_Row
-FROM Fact_Inventory
-)
-SELECT
+date_format(Inventory_Date, '%Y-%m') as Inventory_Month,
+row_number() over (partition by Product_ID, Warehouse_ID, date_format(Inventory_Date, '%Y-%m')
+order by Inventory_Date) as First_Row,
+row_number() over(partition by Product_ID, Warehouse_ID,date_format(Inventory_Date, '%Y-%m')
+order by Inventory_Date desc) as Last_Row from Fact_Inventory)
+select 
 Product_ID,
 Warehouse_ID,
 Inventory_Month,
-MAX(CASE WHEN First_Row = 1 THEN Opening_Stock END) AS Month_Opening_Stock,
-SUM(Issued_or_Sold_Quantity) AS Total_Issued_Sold,
-AVG(Closing_Stock) AS Average_Closing_Stock,
-MAX(CASE WHEN Last_Row = 1 THEN Closing_Stock END) AS Month_End_Closing_Stock
-FROM Monthly_Inventory
-GROUP BY
+max(case when First_Row = 1 then Opening_Stock end) as Month_Opening_Stock,
+sum(Issued_or_Sold_Quantity) as Total_Issued_Sold,
+avg(Closing_Stock) as Average_Closing_Stock,
+max(case when Last_Row = 1 then Closing_Stock end) as Month_End_Closing_Stock
+from Monthly_Inventory
+group by
 Product_ID,
 Warehouse_ID,
 Inventory_Month
-ORDER BY
+order by
 Product_ID,
 Warehouse_ID,
 Inventory_Month;
@@ -129,61 +121,53 @@ Inventory_Month;
 BQ6:Identify warehouses with the highest stockout frequency.
 ----------------------------------------------------------*/
 
-SELECT
+select
 i.Warehouse_ID,
 w.Warehouse_Name,
 w.Warehouse_Location,
-COUNT(i.Closing_Stock) AS Stockout_Count
-FROM Fact_Inventory i
-INNER JOIN Dim_Warehouse w
-ON i.Warehouse_ID = w.Warehouse_ID
-WHERE i.Closing_Stock = 0
-GROUP BY
+count(i.Closing_Stock) as Stockout_Count
+From Fact_Inventory i
+inner join Dim_Warehouse w
+on i.Warehouse_ID = w.Warehouse_ID
+where i.Closing_Stock = 0
+group by
 i.Warehouse_ID,
 w.Warehouse_Name,
 w.Warehouse_Location
-ORDER BY Stockout_Count DESC;
+order by Stockout_Count desc;
 
 
 /*	---------------------------------------------------------
 BQ7: Compare product availability across warehouses.
 ------------------------------------------------------------*/
 
-SELECT
+select
 i.Product_ID,
 p.Product_Name,
 i.Warehouse_ID,
 w.Warehouse_Name,
 i.Inventory_Date,
 i.Closing_Stock,
-CASE
-WHEN i.Closing_Stock = 0 THEN 'Out of Stock'
-ELSE 'Stock Available'
-END AS Stock_Status
-FROM Fact_Inventory i
-INNER JOIN Dim_Product p
-ON i.Product_ID = p.Product_ID
-INNER JOIN Dim_Warehouse w
-ON i.Warehouse_ID = w.Warehouse_ID
-WHERE i.Inventory_Date = (
-SELECT MAX(Inventory_Date)
-FROM Fact_Inventory
-)
-AND EXISTS (
-SELECT 1
-FROM Fact_Inventory other
-WHERE other.Product_ID = i.Product_ID
-AND other.Inventory_Date = i.Inventory_Date
-AND other.Warehouse_ID <> i.Warehouse_ID
-AND (
-(i.Closing_Stock = 0 AND other.Closing_Stock > 0)
-OR
-(i.Closing_Stock > 0 AND other.Closing_Stock = 0)
-)
-)
-ORDER BY
+case
+when i.Closing_Stock = 0 then 'Out of Stock' else 'Stock Available' end as Stock_Status
+from Fact_Inventory i
+inner join Dim_Product p
+on i.Product_ID = p.Product_ID
+inner join Dim_Warehouse w
+on i.Warehouse_ID = w.Warehouse_ID
+where i.Inventory_Date = (
+select max(Inventory_Date)
+FROM Fact_Inventory)
+and exists(select 1
+from Fact_Inventory other
+where other.Product_ID = i.Product_ID
+and other.Inventory_Date = i.Inventory_Date
+and other.Warehouse_ID <> i.Warehouse_ID
+and ((i.Closing_Stock = 0 and other.Closing_Stock > 0)or
+(i.Closing_Stock > 0 and other.Closing_Stock = 0)))
+order by
 i.Product_ID,
-i.Closing_Stock DESC,
+i.Closing_Stock desc,
 i.Warehouse_ID;
 
 
@@ -191,26 +175,22 @@ i.Warehouse_ID;
 BQ8 — Inventory Availability vs Customer Order Demand
 -------------------------------------------------------*/
 
-SELECT
-i.Product_ID AS Inventory_Product_ID,
-i.Warehouse_ID AS Inventory_Warehouse_ID,
+select
+i.Product_ID as Inventory_Product_ID,
+i.Warehouse_ID as Inventory_Warehouse_ID,
 i.Inventory_Date,
 i.Closing_Stock,
-c.Product_ID AS Order_Product_ID,
-c.Warehouse_ID AS Order_Warehouse_ID,
+c.Product_ID as Order_Product_ID,
+c.Warehouse_ID as Order_Warehouse_ID,
 c.Order_Date,
 c.Ordered_Quantity
-FROM Fact_Inventory i
-INNER JOIN Fact_Customer_Order c
-ON i.Product_ID = c.Product_ID
-AND i.Warehouse_ID = c.Warehouse_ID
-AND i.Inventory_Date = c.Order_Date
-ORDER BY
+from Fact_Inventory i
+inner join Fact_Customer_Order c
+on i.Product_ID = c.Product_ID
+and i.Warehouse_ID = c.Warehouse_ID
+and i.Inventory_Date = c.Order_Date
+order by
 i.Product_ID,
 i.Warehouse_ID,
 i.Inventory_Date;
 
-/*-------------------------------------------------------
-BQ9: Which products appear overstocked?
--------------------------------------------------------*/
-# Note: Requires an approved overstock threshold.

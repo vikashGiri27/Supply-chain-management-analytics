@@ -15,11 +15,11 @@ Product_Status varchar(20));
 # Import Dim_Product data :
 
 load data infile 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Supply_Chain_Cleaned_Data/Dim_Product.csv'
-INTO TABLE Dim_Product
-FIELDS TERMINATED BY ','
-ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 ROWS;
+into table Dim_Product
+fields terminated by ','
+enclosed by '"'
+lines terminated by '\n'
+ignore 1 rows;
 
 /*-----------------------------------------------------------------------------
 										 Dim_Warehouse Setup
@@ -111,56 +111,52 @@ only to provide matching calendar-date coverage for the analytical
 date relationships.
 This is a Date Dimension coverage adjustment, NOT data cleaning.*/
 
-INSERT INTO Dim_Date
-(
-    Date,
-    Year,
-    Quarter,
-    Month,
-    Month_Name,
-    Day,
-    Week_Of_Year,
-    Day_Name,
-    Is_Weekend
+insert into  Dim_Date
+(Date,
+Year,
+Quarter,
+Month,
+Month_Name,
+Day,
+Week_Of_Year,
+Day_Name,
+Is_Weekend
 )
-WITH RECURSIVE DateRange AS
-(
-    SELECT DATE('2025-01-01') AS Date
-
-    UNION ALL
-
-    SELECT DATE_ADD(Date, INTERVAL 1 DAY)
-    FROM DateRange
-    WHERE Date < '2025-03-24'
+With recursive DateRange as
+(select date('2025-01-01') as Date
+UNION ALL
+select DATE_ADD(Date, interval 1 day)
+from DateRange
+where Date < '2025-03-24'
 )
-SELECT
-    Date,
-    YEAR(Date),
-    CONCAT('Q', QUARTER(Date)),
-    MONTH(Date),
-    MONTHNAME(Date),
-    DAY(Date),
-    WEEK(Date, 3),
-    DAYNAME(Date),
-    CASE
-        WHEN DAYOFWEEK(Date) IN (1, 7) THEN 'True'
-        ELSE 'False'
-    END
-FROM DateRange;
+select
+Date,
+year(Date),
+CONCAT('Q', quarter(Date)),
+month(Date),
+monthname(Date),
+day(Date),
+week(Date, 3),
+dayname(Date),
+case
+when DAYOFWEEK(Date) in (1, 7) then 'True'
+else 'False'
+end
+from DateRange;
 
 /*-----------------------------------------------------------------------------
 									  Fact_Inventory Setup
 ------------------------------------------------------------------------------*/
 
-CREATE TABLE Fact_Inventory(
-Inventory_Date DATE,
-Product_ID VARCHAR(10),
-Warehouse_ID VARCHAR(10),
-Opening_Stock INT,
-Received_Quantity INT,
-Issued_or_Sold_Quantity INT,
-Closing_Stock INT,
-Reorder_Level INT
+create table Fact_Inventory(
+Inventory_Date date,
+Product_ID varchar(10),
+Warehouse_ID varchar(10),
+Opening_Stock int,
+Received_Quantity int,
+Issued_or_Sold_Quantity int,
+Closing_Stock int,
+Reorder_Level int
 );
 
 # Import Fact_Inventory data
@@ -191,30 +187,30 @@ Add primary key (Inventory_Date,Product_ID,Warehouse_ID);
 								  Fact_Purchase_Order Setup
 ------------------------------------------------------------------------------*/
 
-CREATE TABLE Fact_Purchase_Order(
-PO_ID VARCHAR(20),
-PO_Line_ID VARCHAR(20) PRIMARY KEY,
-Supplier_ID VARCHAR(10),
-Product_ID VARCHAR(10),
-Order_Date DATE,
-Expected_Delivery_Date DATE,
-Actual_Delivery_Date DATE,
-Ordered_Quantity INT,
-Received_Quantity INT,
-Planned_Unit_Cost DECIMAL(10,2),
-Actual_Unit_Cost DECIMAL(10,2),
-PO_Status VARCHAR(30)
+create table Fact_Purchase_Order(
+PO_ID varchar(20),
+PO_Line_ID varchar(20) primary key,
+Supplier_ID varchar(10),
+Product_ID varchar(10),
+Order_Date date,
+Expected_Delivery_Date date,
+Actual_Delivery_Date date,
+Ordered_Quantity int,
+Received_Quantity int,
+Planned_Unit_Cost decimal(10,2),
+Actual_Unit_Cost decimal(10,2),
+PO_Status varchar(30)
 );
 
 # Import Fact_Purchase_Order data
 
-LOAD DATA INFILE
+Load data infile
 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Supply_Chain_Cleaned_Data/Fact_Purchase_Order.csv'
-INTO TABLE Fact_Purchase_Order
-FIELDS TERMINATED BY ','
-ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 ROWS
+Into Table Fact_Purchase_Order
+fields terminated by ','
+enclosed by '"'
+lines terminated by '\n'
+ignore 1 rows
 (
 PO_ID,
 PO_Line_ID,
@@ -229,7 +225,7 @@ Planned_Unit_Cost,
 @Actual_Unit_Cost,
 PO_Status
 )
-SET
+set
 Order_Date = STR_TO_DATE(NULLIF(@Order_Date, ''), '%d-%m-%Y'),
 Expected_Delivery_Date = STR_TO_DATE(NULLIF(@Expected_Delivery_Date, ''), '%d-%m-%Y'),
 Actual_Delivery_Date = STR_TO_DATE(NULLIF(@Actual_Delivery_Date, ''), '%d-%m-%Y'),
@@ -422,10 +418,10 @@ References Dim_Customer(Customer_ID);
 Fact_Return → Dim_Product
 ==============================================================*/
 
-ALTER TABLE Fact_Return
-ADD CONSTRAINT Fk_return_product
-FOREIGN KEY (Product_ID)
-REFERENCES Dim_Product(Product_ID);
+Alter table Fact_Return
+add constraint Fk_return_product
+foreign key (Product_ID)
+references Dim_Product(Product_ID);
 
 /*================================================================
                  Fact_Delivery → Fact_Customer_Order
@@ -448,27 +444,27 @@ REFERENCES Dim_Product(Product_ID);
 /*==================================================================
                      Dim_Date -> Fact_Inventory
 ===================================================================*/
-ALTER TABLE Fact_Inventory
-ADD CONSTRAINT Fk_inventory_date
-FOREIGN KEY (Inventory_Date)
-REFERENCES Dim_Date(Date);
+Alter table Fact_Inventory
+add constraint Fk_inventory_date
+foreign key (Inventory_Date)
+references Dim_Date(date);
 
 /*==================================================================
                   Dim_Date → Fact_Purchase_Order
 ===================================================================*/
 
-ALTER TABLE Fact_Purchase_Order
-ADD CONSTRAINT Fk_po_order_date
-FOREIGN KEY (Order_Date)
-REFERENCES Dim_Date(Date);
+Alter table Fact_Purchase_Order
+Add constraint Fk_po_order_date
+foreign key (Order_Date)
+references Dim_Date(Date);
 
 /*==================================================================
      Dim_Date → Fact_Purchase_Order- Expected_Delivery_Date
 ====================================================================*/
-ALTER TABLE Fact_Purchase_Order
-ADD CONSTRAINT Fk_po_expected_delivery_date
-FOREIGN KEY (Expected_Delivery_Date)
-REFERENCES Dim_Date(Date);
+Alter table Fact_Purchase_Order
+Add constraint Fk_po_expected_delivery_date
+foreign key (Expected_Delivery_Date)
+references Dim_Date(date);
 
 /*==================================================================
      Dim_Date → Fact_Purchase_Order - Actual_Delivery_Date
@@ -491,38 +487,32 @@ REFERENCES Dim_Date(Date);
 /*=============================================================
             Dim_Date → Fact_Delivery — Shipment_Date
 ==============================================================*/
-ALTER TABLE Fact_Delivery
-ADD CONSTRAINT Fk_delivery_shipment_date
-FOREIGN KEY (Shipment_Date)
-REFERENCES Dim_Date(Date);
+Alter table Fact_Delivery
+add constraint Fk_delivery_shipment_date
+foreign key (Shipment_Date)
+references Dim_Date(Date);
 
 /*=============================================================
       Dim_Date → Fact_Delivery — Expected_Delivery_Date
 ==============================================================*/
-ALTER TABLE Fact_Delivery
-ADD CONSTRAINT Fk_delivery_expected_delivery_date
-FOREIGN KEY (Expected_Delivery_Date)
-REFERENCES Dim_Date(Date);
+Alter table Fact_Delivery
+Add constraint Fk_delivery_expected_delivery_date
+foreign key (Expected_Delivery_Date)
+references Dim_Date(date);
 
 /*=============================================================
        Dim_Date → Fact_Delivery — Actual_Delivery_Date
 ==============================================================*/
-ALTER TABLE Fact_Delivery
-ADD CONSTRAINT Fk_delivery_actual_delivery_date
-FOREIGN KEY (Actual_Delivery_Date)
-REFERENCES Dim_Date(Date);
+alter table Fact_Delivery
+add constraint Fk_delivery_actual_delivery_date
+foreign key (Actual_Delivery_Date)
+REFERENCES Dim_Date(date);
 
 /*=============================================================
              Dim_Date → Fact_Return — Return_Date
 ==============================================================*/
-ALTER TABLE Fact_Return
-ADD CONSTRAINT Fk_return_date
-FOREIGN KEY (Return_Date)
-REFERENCES Dim_Date(Date);
+alter table Fact_Return
+add constraint Fk_return_date
+foreign key (Return_Date)
+references Dim_Date(date);
 
-SELECT
-    PO_Status,
-    HEX(PO_Status) AS Status_Hex,
-    COUNT(*) AS Row_Count
-FROM Fact_Purchase_Order
-GROUP BY PO_Status, HEX(PO_Status);
